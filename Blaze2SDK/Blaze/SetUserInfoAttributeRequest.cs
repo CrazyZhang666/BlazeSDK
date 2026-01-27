@@ -15,7 +15,7 @@ public class SetUserInfoAttributeRequest : Tdf
 
     private TdfUInt64 _attribute = new(__typeInfos[0]);
     private TdfUInt64 _mask = new(__typeInfos[1]);
-    private TdfList<ulong> _blazeObjectIdList = new(__typeInfos[2]);
+    private TdfList<ObjectId> _blazeObjectIdList = new(__typeInfos[2]);
 
     public SetUserInfoAttributeRequest()
     {
@@ -45,7 +45,7 @@ public class SetUserInfoAttributeRequest : Tdf
         set => _mask.Value = value;
     }
 
-    public IList<ulong> BlazeObjectIdList
+    public IList<ObjectId> BlazeObjectIdList
     {
         get => _blazeObjectIdList.Value;
         set => _blazeObjectIdList.Value = value;

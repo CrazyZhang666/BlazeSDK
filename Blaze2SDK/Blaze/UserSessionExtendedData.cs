@@ -29,7 +29,7 @@ public class UserSessionExtendedData : Tdf
     private TdfList<int> _latencyList = new(__typeInfos[6]);
     private TdfStruct<Blaze2SDK.Blaze.Util.NetworkQosData?> _qosData = new(__typeInfos[7]);
     private TdfUInt64 _userInfoAttribute = new(__typeInfos[8]);
-    private TdfList<ulong> _blazeObjectIdList = new(__typeInfos[9]);
+    private TdfList<ObjectId> _blazeObjectIdList = new(__typeInfos[9]);
 
     public UserSessionExtendedData()
     {
@@ -108,7 +108,7 @@ public class UserSessionExtendedData : Tdf
         set => _userInfoAttribute.Value = value;
     }
 
-    public IList<ulong> BlazeObjectIdList
+    public IList<ObjectId> BlazeObjectIdList
     {
         get => _blazeObjectIdList.Value;
         set => _blazeObjectIdList.Value = value;

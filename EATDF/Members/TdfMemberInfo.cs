@@ -44,7 +44,7 @@ public class TdfMemberInfo
     {
         Name = name;
         TdfMemberName = tdfMemberName;
-        TagString = ToTagStr(tag);
+        TagString = Helpers.TagToString(tag);
         Tag = tag;
         Type = type;
         MemberIndex = memberIndex;
@@ -53,7 +53,7 @@ public class TdfMemberInfo
 
     public TdfMemberInfo(uint tag, TdfType type)
     {
-        TagString = ToTagStr(tag);
+        TagString = Helpers.TagToString(tag);
         Name = TagString;
         TdfMemberName = TagString;
         Tag = tag;
@@ -62,47 +62,5 @@ public class TdfMemberInfo
         IsUnique = true;
     }
 
-    static string ToTagStr(uint tag)
-    {
-        Span<byte> buf = stackalloc byte[4];
-        int len = 4;
 
-        uint val = tag & 0x3F00;
-        if (val != 0)
-            buf[3] = (byte)(((tag >> 8) & 0x3F) + 32);
-        else
-        {
-            buf[3] = 0;
-            len = 3;
-        }
-
-        val = (tag >> 14) & 0x3F;
-        if (val != 0)
-            buf[2] = (byte)(val + 32);
-        else
-        {
-            buf[2] = 0;
-            len = 2;
-        }
-
-        val = (tag >> 20) & 0x3F;
-        if (val != 0)
-            buf[1] = (byte)(val + 32);
-        else
-        {
-            buf[1] = 0;
-            len = 1;
-        }
-
-        val = tag >> 26;
-        if (val != 0)
-            buf[0] = (byte)(val + 32);
-        else
-        {
-            buf[0] = 0;
-            len = 0;
-        }
-
-        return Encoding.ASCII.GetString(buf.Slice(0, len));
-    }
 }

@@ -11,7 +11,7 @@ public class NotifyServerCensusData : Tdf
     ];
     private ITdfMember[] __members;
 
-    private TdfMap<uint, Blaze2SDK.Blaze.CensusValue> _censusDataByIndexMap = new(__typeInfos[0]);
+    private TdfMap<ObjectType, Blaze2SDK.Blaze.CensusValue> _censusDataByIndexMap = new(__typeInfos[0]);
 
     public NotifyServerCensusData()
     {
@@ -27,7 +27,7 @@ public class NotifyServerCensusData : Tdf
     public override string GetClassName() => "NotifyServerCensusData";
     public override string GetFullClassName() => "Blaze::CensusData::NotifyServerCensusData";
 
-    public IDictionary<uint, Blaze2SDK.Blaze.CensusValue> CensusDataByIndexMap
+    public IDictionary<ObjectType, Blaze2SDK.Blaze.CensusValue> CensusDataByIndexMap
     {
         get => _censusDataByIndexMap.Value;
         set => _censusDataByIndexMap.Value = value;

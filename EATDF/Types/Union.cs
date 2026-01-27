@@ -37,19 +37,19 @@ public class Union : Tdf
         return null;
     }
 
-    public bool Visit(ITdfVisitor visitor, Tdf parent)
+    public bool Visit(ITdfVisitor visitor, Tdf parent, bool visitHeader)
     {
         ITdfMember? activeMember = GetActiveMember();
         if (activeMember == null)
             return false;
 
-        return activeMember.Visit(visitor, parent);
+        return activeMember.Visit(visitor, parent, visitHeader);
     }
 
     public override ITdfMember[] GetMembers()
     {
         ITdfMember? activeMember = GetActiveMember();
-
+        
         if (activeMember != null)
             return [activeMember];
         return [];

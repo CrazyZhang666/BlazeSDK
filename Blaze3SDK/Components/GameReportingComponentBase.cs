@@ -82,7 +82,7 @@ public static class GameReportingComponentBase
         
         public Server()
         {
-            RegisterCommand(new RpcCommandFunc<EmptyMessage, EmptyMessage, EmptyMessage>()
+            RegisterCommand(new RpcCommandFunc<SubmitGameReportRequest, EmptyMessage, EmptyMessage>()
             {
                 Id = (ushort)GameReportingComponentCommand.submitGameReport,
                 Name = "submitGameReport",
@@ -90,7 +90,7 @@ public static class GameReportingComponentBase
                 Func = async (req, ctx) => await SubmitGameReportAsync(req, ctx).ConfigureAwait(false)
             });
             
-            RegisterCommand(new RpcCommandFunc<EmptyMessage, EmptyMessage, EmptyMessage>()
+            RegisterCommand(new RpcCommandFunc<SubmitGameReportRequest, EmptyMessage, EmptyMessage>()
             {
                 Id = (ushort)GameReportingComponentCommand.submitOfflineGameReport,
                 Name = "submitOfflineGameReport",
@@ -186,7 +186,7 @@ public static class GameReportingComponentBase
                 Func = async (req, ctx) => await GetGameReportColumnValuesAsync(req, ctx).ConfigureAwait(false)
             });
             
-            RegisterCommand(new RpcCommandFunc<EmptyMessage, EmptyMessage, EmptyMessage>()
+            RegisterCommand(new RpcCommandFunc<SubmitGameReportRequest, EmptyMessage, EmptyMessage>()
             {
                 Id = (ushort)GameReportingComponentCommand.submitTrustedMidGameReport,
                 Name = "submitTrustedMidGameReport",
@@ -194,7 +194,7 @@ public static class GameReportingComponentBase
                 Func = async (req, ctx) => await SubmitTrustedMidGameReportAsync(req, ctx).ConfigureAwait(false)
             });
             
-            RegisterCommand(new RpcCommandFunc<EmptyMessage, EmptyMessage, EmptyMessage>()
+            RegisterCommand(new RpcCommandFunc<SubmitGameReportRequest, EmptyMessage, EmptyMessage>()
             {
                 Id = (ushort)GameReportingComponentCommand.submitTrustedEndGameReport,
                 Name = "submitTrustedEndGameReport",
@@ -214,7 +214,7 @@ public static class GameReportingComponentBase
         /// Request type: <see cref="EmptyMessage"/><br/>
         /// Response type: <see cref="EmptyMessage"/><br/>
         /// </summary>
-        public virtual Task<EmptyMessage> SubmitGameReportAsync(EmptyMessage request, BlazeRpcContext context)
+        public virtual Task<EmptyMessage> SubmitGameReportAsync(SubmitGameReportRequest request, BlazeRpcContext context)
         {
             throw new GameReportingException(ServerError.ERR_COMMAND_NOT_FOUND);
         }
@@ -224,7 +224,7 @@ public static class GameReportingComponentBase
         /// Request type: <see cref="EmptyMessage"/><br/>
         /// Response type: <see cref="EmptyMessage"/><br/>
         /// </summary>
-        public virtual Task<EmptyMessage> SubmitOfflineGameReportAsync(EmptyMessage request, BlazeRpcContext context)
+        public virtual Task<EmptyMessage> SubmitOfflineGameReportAsync(SubmitGameReportRequest request, BlazeRpcContext context)
         {
             throw new GameReportingException(ServerError.ERR_COMMAND_NOT_FOUND);
         }
@@ -344,7 +344,7 @@ public static class GameReportingComponentBase
         /// Request type: <see cref="EmptyMessage"/><br/>
         /// Response type: <see cref="EmptyMessage"/><br/>
         /// </summary>
-        public virtual Task<EmptyMessage> SubmitTrustedMidGameReportAsync(EmptyMessage request, BlazeRpcContext context)
+        public virtual Task<EmptyMessage> SubmitTrustedMidGameReportAsync(SubmitGameReportRequest request, BlazeRpcContext context)
         {
             throw new GameReportingException(ServerError.ERR_COMMAND_NOT_FOUND);
         }
@@ -354,7 +354,7 @@ public static class GameReportingComponentBase
         /// Request type: <see cref="EmptyMessage"/><br/>
         /// Response type: <see cref="EmptyMessage"/><br/>
         /// </summary>
-        public virtual Task<EmptyMessage> SubmitTrustedEndGameReportAsync(EmptyMessage request, BlazeRpcContext context)
+        public virtual Task<EmptyMessage> SubmitTrustedEndGameReportAsync(SubmitGameReportRequest request, BlazeRpcContext context)
         {
             throw new GameReportingException(ServerError.ERR_COMMAND_NOT_FOUND);
         }

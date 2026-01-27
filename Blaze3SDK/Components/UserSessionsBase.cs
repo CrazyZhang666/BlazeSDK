@@ -164,7 +164,7 @@ public static class UserSessionsBase
                 Func = async (req, ctx) => await UpdateUserSessionClientDataAsync(req, ctx).ConfigureAwait(false)
             });
             
-            RegisterCommand(new RpcCommandFunc<EmptyMessage, EmptyMessage, EmptyMessage>()
+            RegisterCommand(new RpcCommandFunc<SetUserInfoAttributeRequest, EmptyMessage, EmptyMessage>()
             {
                 Id = (ushort)UserSessionsCommand.setUserInfoAttribute,
                 Name = "setUserInfoAttribute",
@@ -324,7 +324,7 @@ public static class UserSessionsBase
         /// Request type: <see cref="EmptyMessage"/><br/>
         /// Response type: <see cref="EmptyMessage"/><br/>
         /// </summary>
-        public virtual Task<EmptyMessage> SetUserInfoAttributeAsync(EmptyMessage request, BlazeRpcContext context)
+        public virtual Task<EmptyMessage> SetUserInfoAttributeAsync(SetUserInfoAttributeRequest request, BlazeRpcContext context)
         {
             throw new UserSessionsException(ServerError.ERR_COMMAND_NOT_FOUND);
         }

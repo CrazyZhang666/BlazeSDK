@@ -24,9 +24,9 @@ public class TdfTimeValue : TdfMember<TimeValue>
         return UserSet;
     }
 
-    public override bool Visit(ITdfVisitor visitor, Tdf parent)
+    public override bool Visit(ITdfVisitor visitor, Tdf parent, bool visitHeader)
     {
-        return visitor.VisitTimeValue(this, parent);
+        return visitor.VisitTimeValue(this, parent, visitHeader);
     }
 
     public override string ToString()

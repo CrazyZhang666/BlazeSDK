@@ -24,9 +24,9 @@ public class TdfObjectId : TdfMember<ObjectId>
         return UserSet;
     }
 
-    public override bool Visit(ITdfVisitor visitor, Tdf parent)
+    public override bool Visit(ITdfVisitor visitor, Tdf parent, bool visitHeader)
     {
-        return visitor.VisitBlazeObjectId(this, parent);
+        return visitor.VisitBlazeObjectId(this, parent, visitHeader);
     }
 
     public override string ToString()

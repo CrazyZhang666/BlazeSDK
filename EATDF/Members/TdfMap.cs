@@ -27,9 +27,9 @@ public class TdfMap<TKey, TValue> : TdfMember<IDictionary<TKey, TValue>> where T
         return Value != null && (UserSet || Value.Count > 0);
     }
 
-    public override bool Visit(ITdfVisitor visitor, Tdf parent)
+    public override bool Visit(ITdfVisitor visitor, Tdf parent, bool visitHeader)
     {
-        return visitor.VisitMap(this, parent);
+        return visitor.VisitMap(this, parent, visitHeader);
     }
 
     public override string ToString()

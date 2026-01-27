@@ -25,9 +25,9 @@ public class TdfStruct<TStruct> : TdfMember<TStruct> where TStruct : Tdf?, new()
         return UserSet && Value != null;
     }
 
-    public override bool Visit(ITdfVisitor visitor, Tdf parent)
+    public override bool Visit(ITdfVisitor visitor, Tdf parent, bool visitHeader)
     {
-        return visitor.VisitStruct(this, parent);
+        return visitor.VisitStruct(this, parent, visitHeader);
     }
 
     public override string ToString()

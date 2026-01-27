@@ -68,6 +68,8 @@ internal class HeatReader(HeatDecoder decoder, Stream stream)
         [typeof(ulong)] = new TypeReader<ulong>(TryReadUInt64),
         [typeof(string)] = new TypeReader<string>(TryReadString),
         [typeof(byte[])] = new TypeReader<byte[]>(TryReadBlob),
+        [typeof(ObjectType)] = new TypeReader<ObjectType>(TryReadObjectType),
+        [typeof(ObjectId)] = new TypeReader<ObjectId>(TryReadObjectId),
 
         // for lists and maps of unknown type arguments
         [typeof(IList)] = new TypeReader<IList>(TryReadUnknownList),
@@ -1049,6 +1051,66 @@ internal class HeatReader(HeatDecoder decoder, Stream stream)
 
     #endregion
 
+    #region ObjectType
+
+    /// <summary>
+    /// Reads a object type from the stream.
+    /// </summary>
+    /// <param name="reader">The reader that will perform the read operation.</param>
+    /// <param name="value">The read value.</param>
+    /// <param name="sizeHint">The value size hint.</param>
+    /// <returns>True if the value was read successfully, otherwise false. False also indicates fatal decode error.</returns>
+    public static bool TryReadObjectType(HeatReader reader, out ObjectType value, byte sizeHint)
+    {
+        return reader.TryReadObjectType(out value, sizeHint);
+    }
+
+    public bool TryReadObjectType(out ObjectType value, byte sizeHint)
+    {
+        if (!TryReadUInt32(out uint objectType, sizeHint))
+        {
+            value = default;
+            return false;
+        }
+
+        value = new ObjectType(objectType);
+        return true;
+    }
+
+    #endregion
+
+    #region ObjectId
+
+    /// <summary>
+    /// Reads a object id from the stream.
+    /// </summary>
+    /// <param name="reader">The reader that will perform the read operation.</param>
+    /// <param name="value">The read value.</param>
+    /// <param name="sizeHint">The value size hint.</param>
+    /// <returns>True if the value was read successfully, otherwise false. False also indicates fatal decode error.</returns>
+    public static bool TryReadObjectId(HeatReader reader, out ObjectId value, byte sizeHint)
+    {
+        return reader.TryReadObjectId(out value, sizeHint);
+    }
+
+    public bool TryReadObjectId(out ObjectId value, byte sizeHint)
+    {
+        if (!TryReadUInt64(out ulong objectId, sizeHint))
+        {
+            value = default;
+            return false;
+        }
+
+        uint id = (uint)(objectId & 0xFFFFFFFF);
+        ushort type = (ushort)((objectId >> 32) & 0xFFFF);
+        ushort component = (ushort)((objectId >> 48) & 0xFFFF);
+
+        value = new ObjectId(component, type, id);
+        return true;
+    }
+
+    #endregion
+
     #region Restore points
     public RestorePoint CreateRestorePoint()
     {
@@ -1086,7 +1148,7 @@ internal class HeatReader(HeatDecoder decoder, Stream stream)
         RestoreTo(rp);
 
         parent.GetUnknownMembers().Add(member);
-        return member.Visit(Decoder, parent);
+        return member.Visit(Decoder, parent, visitHeader: true);
     }
 
     ITdfMember? createNewMemberFromHeader(HeatMemberHeader header)
@@ -1252,7 +1314,7 @@ internal class HeatReader(HeatDecoder decoder, Stream stream)
             }
 
             ITdfMember member = members[currentMember++];
-            bool visited = member.Visit(Decoder, val);
+            bool visited = member.Visit(Decoder, val, visitHeader: true);
 
             if (visited && !member.TdfInfo.IsUnique)
             {
@@ -1293,7 +1355,7 @@ internal class HeatReader(HeatDecoder decoder, Stream stream)
 
         val.SwitchActiveIndex((byte)activeIndex);
 
-        if (!val.Visit(Decoder, val))
+        if (!val.Visit(Decoder, val, visitHeader: true))
             return TrySkipNextElement(val);
 
         return true;
@@ -1374,4 +1436,6 @@ internal class HeatReader(HeatDecoder decoder, Stream stream)
             }
         };
     }
+
+
 }

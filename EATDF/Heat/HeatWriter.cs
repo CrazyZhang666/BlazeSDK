@@ -66,6 +66,8 @@ internal class HeatWriter(HeatEncoder encoder, Stream stream)
         [typeof(ulong)] = new TypeWriter<ulong>((writer, value, sizeHint) => writer.WriteUInt64(value, sizeHint)),
         [typeof(string)] = new TypeWriter<string>((writer, value, sizeHint) => writer.WriteString(value, sizeHint)),
         [typeof(byte[])] = new TypeWriter<byte[]>((writer, value, sizeHint) => writer.WriteBlob(value, sizeHint)),
+        [typeof(ObjectType)] = new TypeWriter<ObjectType>((writer, value, sizeHint) => writer.WriteObjectType(value, sizeHint)),
+        [typeof(ObjectId)] = new TypeWriter<ObjectId>((writer, value, sizeHint) => writer.WriteObjectId(value, sizeHint)),
 
         //// for lists and maps of unknown type arguments
         //[typeof(IList)] = new TypeWriter<IList>(WriteUnknownList),
@@ -355,6 +357,23 @@ internal class HeatWriter(HeatEncoder encoder, Stream stream)
     }
 
     #endregion
+
+    public void WriteObjectType(ObjectType value, byte preEncodedSizeHint)
+    {
+        WriteUInt32(value.ToUInt32(), preEncodedSizeHint);
+    }
+
+    public void WriteObjectId(ObjectId value, byte preEncodedSizeHint)
+    {
+        ulong objectId = 0;
+        unchecked
+        {
+            objectId |= (ulong)value.Type.Component << 48;
+            objectId |= (ulong)value.Type.Type << 32;
+            objectId |= (uint)value.Id;
+        }
+        WriteUInt64(objectId, preEncodedSizeHint);
+    }
 
 
     public void WriteMap<TKey, TValue>(IDictionary<TKey, TValue> value, byte encodedSizeHint) where TKey : notnull

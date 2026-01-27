@@ -23,9 +23,9 @@ public class TdfInt16 : TdfMember<short>
         return UserSet;
     }
 
-    public override bool Visit(ITdfVisitor visitor, Tdf parent)
+    public override bool Visit(ITdfVisitor visitor, Tdf parent, bool visitHeader)
     {
-        return visitor.VisitInt16(this, parent);
+        return visitor.VisitInt16(this, parent, visitHeader);
     }
 
     public override string ToString()

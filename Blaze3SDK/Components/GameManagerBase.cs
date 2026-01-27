@@ -488,7 +488,7 @@ public static class GameManagerBase
                 Func = async (req, ctx) => await GetMatchmakingConfigAsync(req, ctx).ConfigureAwait(false)
             });
             
-            RegisterCommand(new RpcCommandFunc<GetGameDataFromIdRequest, EmptyMessage, EmptyMessage>()
+            RegisterCommand(new RpcCommandFunc<GetGameDataFromIdRequest, GameBrowserDataList, EmptyMessage>()
             {
                 Id = (ushort)GameManagerCommand.getGameDataFromId,
                 Name = "getGameDataFromId",
@@ -940,7 +940,7 @@ public static class GameManagerBase
         /// Request type: <see cref="GetGameDataFromIdRequest"/><br/>
         /// Response type: <see cref="EmptyMessage"/><br/>
         /// </summary>
-        public virtual Task<EmptyMessage> GetGameDataFromIdAsync(GetGameDataFromIdRequest request, BlazeRpcContext context)
+        public virtual Task<GameBrowserDataList> GetGameDataFromIdAsync(GetGameDataFromIdRequest request, BlazeRpcContext context)
         {
             throw new GameManagerException(ServerError.ERR_COMMAND_NOT_FOUND);
         }

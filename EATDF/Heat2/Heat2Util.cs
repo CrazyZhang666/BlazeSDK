@@ -167,6 +167,10 @@ internal class Heat2Util
                 return Heat2Type.Float;
         }
 
+        // union must be before tdf, because union is a subclass of tdf
+        if (type.IsSubclassOf(typeof(Union)))
+            return Heat2Type.Union;
+
         if (type.IsSubclassOf(typeof(Tdf)))
             return Heat2Type.Struct;
 
@@ -178,9 +182,6 @@ internal class Heat2Util
 
         if (type == typeof(byte[]))
             return Heat2Type.Binary;
-
-        if (type.IsSubclassOf(typeof(Union)))
-            return Heat2Type.Union;
 
         if (type == typeof(ObjectType))
             return Heat2Type.BlazeObjectType;

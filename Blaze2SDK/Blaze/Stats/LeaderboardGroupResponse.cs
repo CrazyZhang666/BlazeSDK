@@ -10,7 +10,7 @@ public class LeaderboardGroupResponse : Tdf
         new TdfMemberInfo("BoardName", "mBoardName", 0x8AE86D00, TdfType.String, 0, true), // BNAM
         new TdfMemberInfo("ContextType", "mContextType", 0x8F4E7000, TdfType.UInt32, 1, true), // CTYP
         new TdfMemberInfo("Desc", "mDesc", 0x925CE300, TdfType.String, 2, true), // DESC
-        new TdfMemberInfo("EntityType", "mEntityType", 0x974E7000, TdfType.UInt32, 3, true), // ETYP
+        new TdfMemberInfo("EntityType", "mEntityType", 0x974E7000, TdfType.ObjectType, 3, true), // ETYP
         new TdfMemberInfo("KeyScopeUnitMap", "mKeyScopeUnitMap", 0xAF3D6D00, TdfType.Map, 4, true), // KSUM
         new TdfMemberInfo("LeaderboardSize", "mLeaderboardSize", 0xB22CFA00, TdfType.Int32, 5, true), // LBSZ
         new TdfMemberInfo("StatKeyColumns", "mStatKeyColumns", 0xB29CF400, TdfType.List, 6, true), // LIST
@@ -23,7 +23,7 @@ public class LeaderboardGroupResponse : Tdf
     private TdfString _boardName = new(__typeInfos[0]);
     private TdfUInt32 _contextType = new(__typeInfos[1]);
     private TdfString _desc = new(__typeInfos[2]);
-    private TdfUInt32 _entityType = new(__typeInfos[3]);
+    private TdfObjectType _entityType = new(__typeInfos[3]);
     private TdfMap<string, string> _keyScopeUnitMap = new(__typeInfos[4]);
     private TdfInt32 _leaderboardSize = new(__typeInfos[5]);
     private TdfList<Blaze2SDK.Blaze.Stats.LeaderboardStatKeyColumn> _statKeyColumns = new(__typeInfos[6]);
@@ -72,7 +72,7 @@ public class LeaderboardGroupResponse : Tdf
         set => _desc.Value = value;
     }
 
-    public uint EntityType
+    public ObjectType EntityType
     {
         get => _entityType.Value;
         set => _entityType.Value = value;

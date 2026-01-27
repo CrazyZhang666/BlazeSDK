@@ -11,7 +11,7 @@ public class ClientMessage : Tdf
         new TdfMemberInfo("Flags", "mFlags", 0x9AC86700, TdfType.Enum, 1, true), // FLAG
         new TdfMemberInfo("Status", "mStatus", 0xCF487400, TdfType.UInt32, 2, true), // STAT
         new TdfMemberInfo("Tag", "mTag", 0xD219C000, TdfType.UInt32, 3, true), // TAG
-        new TdfMemberInfo("Target", "mTarget", 0xD21CA700, TdfType.UInt64, 4, true), // TARG
+        new TdfMemberInfo("Target", "mTarget", 0xD21CA700, TdfType.ObjectId, 4, true), // TARG
         new TdfMemberInfo("Type", "mType", 0xD39C2500, TdfType.UInt32, 5, true), // TYPE
     ];
     private ITdfMember[] __members;
@@ -20,7 +20,7 @@ public class ClientMessage : Tdf
     private TdfEnum<Blaze2SDK.Blaze.Messaging.MessageFlags> _flags = new(__typeInfos[1]);
     private TdfUInt32 _status = new(__typeInfos[2]);
     private TdfUInt32 _tag = new(__typeInfos[3]);
-    private TdfUInt64 _target = new(__typeInfos[4]);
+    private TdfObjectId _target = new(__typeInfos[4]);
     private TdfUInt32 _type = new(__typeInfos[5]);
 
     public ClientMessage()
@@ -66,7 +66,7 @@ public class ClientMessage : Tdf
         set => _tag.Value = value;
     }
 
-    public ulong Target
+    public ObjectId Target
     {
         get => _target.Value;
         set => _target.Value = value;

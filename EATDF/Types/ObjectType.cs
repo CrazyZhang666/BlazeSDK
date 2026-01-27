@@ -1,7 +1,7 @@
 ﻿
 namespace EATDF.Types;
 
-public struct ObjectType
+public struct ObjectType : IComparable<ObjectType>
 {
     public ushort Component { get; set; }
     public ushort Type { get; set; }
@@ -18,30 +18,32 @@ public struct ObjectType
         Type = type;
     }
 
+    public ObjectType(uint objectType)
+    {
+        Type = (ushort)(objectType & 0xFFFF);
+        Component = (ushort)((objectType >> 16) & 0xFFFF);
+    }
+
     public override string ToString()
     {
         return $"{Component}/{Type}";
     }
 
-    public object? GetValue()
+    public uint ToUInt32()
     {
-        return this;
+        unchecked
+        {
+            uint objectType = 0;
+            objectType |= ((uint)Component << 16);
+            objectType |= Type;
+            return objectType;
+        }
     }
 
-    public void SetValue(object value)
+    public int CompareTo(ObjectType other)
     {
-        ObjectType obj = (ObjectType)value;
-        Component = obj.Component;
-        Type = obj.Type;
-    }
-
-    public object? GetDefaultValue()
-    {
-        return new ObjectType();
-    }
-
-    public object? GetInitValue()
-    {
-        return new ObjectType();
+        uint thisValue = ToUInt32();
+        uint otherValue = other.ToUInt32();
+        return thisValue.CompareTo(otherValue);
     }
 }

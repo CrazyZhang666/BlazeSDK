@@ -80,7 +80,7 @@ public abstract class BlazeServerContext : IBlazeServerCallbacks
         ITdfSerializer serializer = options.TdfSerializer switch
         {
             TdfSerializerType.Heat => new HeatSerializer(),
-            TdfSerializerType.Heat2 => new Heat2Serializer(options.TdfRegistry),
+            TdfSerializerType.Heat2 => new Heat2Serializer(options.TdfRegistry, options.Heat1BackCompatibility),
             TdfSerializerType.Xml => new XmlSerializer(),
             _ => throw new ArgumentException("Invalid serializer type")
         };

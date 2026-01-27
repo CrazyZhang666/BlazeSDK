@@ -11,7 +11,7 @@ public class ServerMessage : Tdf
         new TdfMemberInfo("MessageId", "mMessageId", 0xB67A6400, TdfType.UInt32, 1, true), // MGID
         new TdfMemberInfo("SourceName", "mSourceName", 0xBA1B6500, TdfType.String, 2, true), // NAME
         new TdfMemberInfo("Payload", "mPayload", 0xC39B2400, TdfType.Struct, 3, true), // PYLD
-        new TdfMemberInfo("Source", "mSource", 0xCF28E500, TdfType.UInt64, 4, true), // SRCE
+        new TdfMemberInfo("Source", "mSource", 0xCF28E500, TdfType.ObjectId, 4, true), // SRCE
         new TdfMemberInfo("Timestamp", "mTimestamp", 0xD29B6500, TdfType.UInt32, 5, true), // TIME
     ];
     private ITdfMember[] __members;
@@ -20,7 +20,7 @@ public class ServerMessage : Tdf
     private TdfUInt32 _messageId = new(__typeInfos[1]);
     private TdfString _sourceName = new(__typeInfos[2]);
     private TdfStruct<Blaze2SDK.Blaze.Messaging.ClientMessage?> _payload = new(__typeInfos[3]);
-    private TdfUInt64 _source = new(__typeInfos[4]);
+    private TdfObjectId _source = new(__typeInfos[4]);
     private TdfUInt32 _timestamp = new(__typeInfos[5]);
 
     public ServerMessage()
@@ -66,7 +66,7 @@ public class ServerMessage : Tdf
         set => _payload.Value = value;
     }
 
-    public ulong Source
+    public ObjectId Source
     {
         get => _source.Value;
         set => _source.Value = value;

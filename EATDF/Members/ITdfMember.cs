@@ -8,7 +8,7 @@ public interface ITdfMember
     bool UserSet { get; }
     bool IsSet();
     object? GetValue();
-    bool Visit(ITdfVisitor visitor, Tdf parent);
+    bool Visit(ITdfVisitor visitor, Tdf parent, bool visitHeader);
     void Reset();
 
 }

@@ -23,9 +23,9 @@ public class TdfBool : TdfMember<bool>
         return UserSet;
     }
 
-    public override bool Visit(ITdfVisitor visitor, Tdf parent)
+    public override bool Visit(ITdfVisitor visitor, Tdf parent, bool visitHeader)
     {
-        return visitor.VisitBool(this, parent);
+        return visitor.VisitBool(this, parent, visitHeader);
     }
 
     public override string ToString()

@@ -26,6 +26,11 @@ internal class Heat2Writer(Heat2Encoder encoder, Stream stream)
     public const int HeaderSize = 4;
 
     /// <summary>
+    /// Whether heat1 back compatibility mode is enabled.
+    /// </summary>
+    private bool Heat1BackCompatibility => Encoder.Heat1BackCompatibility;
+
+    /// <summary>
     /// The encoder that created this writer
     /// </summary>
     public Heat2Encoder Encoder { get; } = encoder;
@@ -41,25 +46,27 @@ internal class Heat2Writer(Heat2Encoder encoder, Stream stream)
     /// <typeparam name="T">The type of the value to write.</typeparam>
     /// <param name="writer">The writer which performs the write operation.</param>
     /// <param name="value">The value to write.</param>
-    delegate void TypeWriter<T>(Heat2Writer writer, T value);
-    delegate void TypeWriter(Heat2Writer writer, object? value);
+    delegate void TypeWriter<T>(Heat2Writer writer, T value, bool visitHeader);
+    delegate void TypeWriter(Heat2Writer writer, object? value, bool visitHeader);
 
     /// <summary>
     /// Initial type writers for basic types.
     /// </summary>
     static readonly ConcurrentDictionary<Type, Delegate> _typeWriters = new ConcurrentDictionary<Type, Delegate>()
     {
-        [typeof(bool)] = new TypeWriter<bool>((writer, value) => writer.WriteBool(value)),
-        [typeof(sbyte)] = new TypeWriter<sbyte>((writer, value) => writer.WriteInt8(value)),
-        [typeof(byte)] = new TypeWriter<byte>((writer, value) => writer.WriteUInt8(value)),
-        [typeof(short)] = new TypeWriter<short>((writer, value) => writer.WriteInt16(value)),
-        [typeof(ushort)] = new TypeWriter<ushort>((writer, value) => writer.WriteUInt16(value)),
-        [typeof(int)] = new TypeWriter<int>((writer, value) => writer.WriteInt32(value)),
-        [typeof(uint)] = new TypeWriter<uint>((writer, value) => writer.WriteUInt32(value)),
-        [typeof(long)] = new TypeWriter<long>((writer, value) => writer.WriteInt64(value)),
-        [typeof(ulong)] = new TypeWriter<ulong>((writer, value) => writer.WriteUInt64(value)),
-        [typeof(string)] = new TypeWriter<string>((writer, value) => writer.WriteString(value)),
-        [typeof(byte[])] = new TypeWriter<byte[]>((writer, value) => writer.WriteBlob(value)),
+        [typeof(bool)] = new TypeWriter<bool>((writer, value, _) => writer.WriteBool(value)),
+        [typeof(sbyte)] = new TypeWriter<sbyte>((writer, value, _) => writer.WriteInt8(value)),
+        [typeof(byte)] = new TypeWriter<byte>((writer, value, _) => writer.WriteUInt8(value)),
+        [typeof(short)] = new TypeWriter<short>((writer, value, _) => writer.WriteInt16(value)),
+        [typeof(ushort)] = new TypeWriter<ushort>((writer, value, _) => writer.WriteUInt16(value)),
+        [typeof(int)] = new TypeWriter<int>((writer, value, _) => writer.WriteInt32(value)),
+        [typeof(uint)] = new TypeWriter<uint>((writer, value, _) => writer.WriteUInt32(value)),
+        [typeof(long)] = new TypeWriter<long>((writer, value, _) => writer.WriteInt64(value)),
+        [typeof(ulong)] = new TypeWriter<ulong>((writer, value, _) => writer.WriteUInt64(value)),
+        [typeof(string)] = new TypeWriter<string>((writer, value, _) => writer.WriteString(value)),
+        [typeof(byte[])] = new TypeWriter<byte[]>((writer, value, _) => writer.WriteBlob(value)),
+        [typeof(ObjectType)] = new TypeWriter<ObjectType>((writer, value, _) => writer.WriteObjectType(value)),
+        [typeof(ObjectId)] = new TypeWriter<ObjectId>((writer, value, _) => writer.WriteObjectId(value)),
 
         //// for lists and maps of unknown type arguments
         //[typeof(IList)] = new TypeWriter<IList>(WriteUnknownList),
@@ -82,8 +89,19 @@ internal class Heat2Writer(Heat2Encoder encoder, Stream stream)
 
     static TypeWriter<T> CreateCustomWriter<T>(Type type)
     {
+        if (type.IsSubclassOf(typeof(Union)))
+            return (Heat2Writer writer, T value, bool visitHeader) =>
+            {
+                if (value is Union union)
+                {
+                    writer.Stream.WriteByte(union.ActiveIndex);
+                    union.Visit(writer.Encoder, union, visitHeader);
+                    //writer.Encoder.VisitTdf(union);
+                }
+            };
+
         if (type.IsSubclassOf(typeof(Tdf)))
-            return (Heat2Writer writer, T value) =>
+            return (Heat2Writer writer, T value, bool _) =>
             {
                 if (value is Tdf tdf)
                     writer.Encoder.VisitTdf(tdf);
@@ -93,16 +111,6 @@ internal class Heat2Writer(Heat2Encoder encoder, Stream stream)
 
         if (type.IsEnum)
             return createEnumTypeWriter<T>(type);
-
-        if (type.IsSubclassOf(typeof(Union)))
-            return (Heat2Writer writer, T value) =>
-            {
-                if (value is Union union)
-                {
-                    writer.Stream.WriteByte(union.ActiveIndex);
-                    writer.Encoder.VisitTdf(union);
-                }
-            };
 
         if (Helpers.IsList(type))
         {
@@ -117,7 +125,7 @@ internal class Heat2Writer(Heat2Encoder encoder, Stream stream)
         }
 
         // Unknown type :(
-        return (Heat2Writer writer, T value) =>
+        return (Heat2Writer writer, T value, bool _) =>
         {
             throw new NotSupportedException($"Type is not supported: {typeof(T).FullName}");
         };
@@ -204,7 +212,7 @@ internal class Heat2Writer(Heat2Encoder encoder, Stream stream)
         Stream.Write(bytes);
         Stream.WriteByte(0); // null terminator
 
-        if(rentedPool != null)
+        if (rentedPool != null)
             ArrayPool<byte>.Shared.Return(rentedPool);
     }
 
@@ -243,7 +251,7 @@ internal class Heat2Writer(Heat2Encoder encoder, Stream stream)
         WriteVarInt(value);
     }
 
-    public void WriteInt64(long value) 
+    public void WriteInt64(long value)
     {
         WriteVarInt(value);
     }
@@ -275,22 +283,22 @@ internal class Heat2Writer(Heat2Encoder encoder, Stream stream)
     {
         Type valueType = typeof(TEnum);
         TypeWriter<TEnum> writer = (TypeWriter<TEnum>)_typeWriters.GetOrAdd(valueType, createEnumTypeWriter<TEnum>);
-        writer(this, value);
+        writer(this, value, visitHeader: true);
     }
 
     static TypeWriter<TEnum> createEnumTypeWriter<TEnum>(Type type)
     {
         return Type.GetTypeCode(typeof(TEnum)) switch
         {
-            TypeCode.SByte => (Heat2Writer writer, TEnum value) => writer.WriteInt8(Convert.ToSByte(value)),
-            TypeCode.Byte => (Heat2Writer writer, TEnum value) => writer.WriteUInt8(Convert.ToByte(value)),
-            TypeCode.Int16 => (Heat2Writer writer, TEnum value) => writer.WriteInt16(Convert.ToInt16(value)),
-            TypeCode.UInt16 => (Heat2Writer writer, TEnum value) => writer.WriteUInt16(Convert.ToUInt16(value)),
-            TypeCode.Int32 => (Heat2Writer writer, TEnum value) => writer.WriteInt32(Convert.ToInt32(value)),
-            TypeCode.UInt32 => (Heat2Writer writer, TEnum value) => writer.WriteUInt32(Convert.ToUInt32(value)),
-            TypeCode.Int64 => (Heat2Writer writer, TEnum value) => writer.WriteInt64(Convert.ToInt64(value)),
-            TypeCode.UInt64 => (Heat2Writer writer, TEnum value) => writer.WriteUInt64(Convert.ToUInt64(value)),
-            _ => (Heat2Writer writer, TEnum value) => throw new NotSupportedException($"Enum type is not supported: {typeof(TEnum).FullName}"),
+            TypeCode.SByte => (Heat2Writer writer, TEnum value, bool _) => writer.WriteInt8(Convert.ToSByte(value)),
+            TypeCode.Byte => (Heat2Writer writer, TEnum value, bool _) => writer.WriteUInt8(Convert.ToByte(value)),
+            TypeCode.Int16 => (Heat2Writer writer, TEnum value, bool _) => writer.WriteInt16(Convert.ToInt16(value)),
+            TypeCode.UInt16 => (Heat2Writer writer, TEnum value, bool _) => writer.WriteUInt16(Convert.ToUInt16(value)),
+            TypeCode.Int32 => (Heat2Writer writer, TEnum value, bool _) => writer.WriteInt32(Convert.ToInt32(value)),
+            TypeCode.UInt32 => (Heat2Writer writer, TEnum value, bool _) => writer.WriteUInt32(Convert.ToUInt32(value)),
+            TypeCode.Int64 => (Heat2Writer writer, TEnum value, bool _) => writer.WriteInt64(Convert.ToInt64(value)),
+            TypeCode.UInt64 => (Heat2Writer writer, TEnum value, bool _) => writer.WriteUInt64(Convert.ToUInt64(value)),
+            _ => (Heat2Writer writer, TEnum value, bool _) => throw new NotSupportedException($"Enum type is not supported: {typeof(TEnum).FullName}"),
         };
     }
 
@@ -305,7 +313,7 @@ internal class Heat2Writer(Heat2Encoder encoder, Stream stream)
     {
         Type valueType = typeof(IList<T>);
         TypeWriter<IList<T>> writer = (TypeWriter<IList<T>>)_typeWriters.GetOrAdd(valueType, createListTypeWriter<T>);
-        writer(this, value);
+        writer(this, value, visitHeader: true);
     }
 
     static TypeWriter<IList<T>> createListTypeWriter<T>(Type listType)
@@ -314,17 +322,23 @@ internal class Heat2Writer(Heat2Encoder encoder, Stream stream)
         Heat2Type? itemHeatTypeNullable = Heat2Util.ToHeat2Type(typeof(T));
 
         if (itemHeatTypeNullable == null)
-            return (Heat2Writer writer, IList<T> value) => throw new NotSupportedException($"List type is not supported: {typeof(T).FullName}");
+            return (Heat2Writer writer, IList<T> value, bool _) => throw new NotSupportedException($"List type is not supported: {typeof(T).FullName}");
 
         Heat2Type itemHeatType = itemHeatTypeNullable.Value;
+        bool isMisencodable = itemHeatType == Heat2Type.Union || itemHeatType == Heat2Type.List || itemHeatType == Heat2Type.Map;
 
-        return (Heat2Writer writer, IList<T> value) =>
+
+        return (Heat2Writer writer, IList<T> value, bool _) =>
         {
-            writer.WriteHeat2Type(itemHeatType);
+            Heat2Type type = itemHeatType;
+            if (writer.Heat1BackCompatibility && isMisencodable)
+                type = Heat2Type.Struct;
+
+            writer.WriteHeat2Type(type);
             writer.WriteVarInt(value.Count);
 
             foreach (T item in value)
-                itemWriter(writer, item);
+                itemWriter(writer, item, visitHeader: false);
         };
     }
 
@@ -337,7 +351,7 @@ internal class Heat2Writer(Heat2Encoder encoder, Stream stream)
     {
         Type valueType = typeof(IDictionary<TKey, TValue>);
         TypeWriter<IDictionary<TKey, TValue>> writer = (TypeWriter<IDictionary<TKey, TValue>>)_typeWriters.GetOrAdd(valueType, createMapTypeWriter<TKey, TValue>);
-        writer(this, value);
+        writer(this, value, visitHeader: true);
     }
 
     static TypeWriter<IDictionary<TKey, TValue>> createMapTypeWriter<TKey, TValue>(Type mapType) where TKey : notnull
@@ -347,16 +361,16 @@ internal class Heat2Writer(Heat2Encoder encoder, Stream stream)
 
         Heat2Type? keyHeatTypeNullable = Heat2Util.ToHeat2Type(typeof(TKey));
         if (keyHeatTypeNullable == null)
-            return (Heat2Writer writer, IDictionary<TKey, TValue> value) => throw new NotSupportedException($"Map key type is not supported: {typeof(TKey).FullName}");
+            return (Heat2Writer writer, IDictionary<TKey, TValue> value, bool _) => throw new NotSupportedException($"Map key type is not supported: {typeof(TKey).FullName}");
 
         Heat2Type? valueHeatTypeNullable = Heat2Util.ToHeat2Type(typeof(TValue));
         if (valueHeatTypeNullable == null)
-            return (Heat2Writer writer, IDictionary<TKey, TValue> value) => throw new NotSupportedException($"Map value type is not supported: {typeof(TValue).FullName}");
+            return (Heat2Writer writer, IDictionary<TKey, TValue> value, bool _) => throw new NotSupportedException($"Map value type is not supported: {typeof(TValue).FullName}");
 
         Heat2Type keyHeatType = keyHeatTypeNullable.Value;
         Heat2Type valueHeatType = valueHeatTypeNullable.Value;
 
-        return (Heat2Writer writer, IDictionary<TKey, TValue> value) =>
+        return (Heat2Writer writer, IDictionary<TKey, TValue> value, bool _) =>
         {
             writer.WriteHeat2Type(keyHeatType);
             writer.WriteHeat2Type(valueHeatType);
@@ -364,8 +378,8 @@ internal class Heat2Writer(Heat2Encoder encoder, Stream stream)
 
             foreach (KeyValuePair<TKey, TValue> pair in value)
             {
-                keyWriter(writer, pair.Key);
-                valueWriter(writer, pair.Value);
+                keyWriter(writer, pair.Key, visitHeader: true);
+                valueWriter(writer, pair.Value, visitHeader: true);
             }
         };
     }
@@ -381,3 +395,4 @@ internal class Heat2Writer(Heat2Encoder encoder, Stream stream)
         throw new NotImplementedException();
     }
 }
+

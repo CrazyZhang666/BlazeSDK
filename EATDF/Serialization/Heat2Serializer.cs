@@ -10,29 +10,30 @@ namespace EATDF.Serialization;
 public class Heat2Serializer : TdfSerializer
 {
     public override string Name => "Heat2";
-
     public ITdfRegistry Registry { get; }
-
-    public Heat2Serializer(ITdfRegistry registry)
+    public bool Heat1BackCompatibility { get; set; }
+    public Heat2Serializer(ITdfRegistry registry, bool heat1BackCompatibility)
     {
         Registry = registry;
+        Heat1BackCompatibility = heat1BackCompatibility;
     }
 
     public Heat2Serializer()
     {
         Registry = new TdfRegistry();
+        Heat1BackCompatibility = true;
     }
 
     public override bool Deserialize(Stream stream, Tdf tdf)
     {
-        Heat2Decoder decoder = new Heat2Decoder(stream, Registry);
+        Heat2Decoder decoder = new Heat2Decoder(stream, Registry, Heat1BackCompatibility);
         decoder.VisitTdf(tdf);
         return decoder.StreamValid;
     }
 
     public override void Serialize(Stream stream, Tdf tdf)
     {
-        Heat2Encoder encoder = new Heat2Encoder(stream, Registry);
+        Heat2Encoder encoder = new Heat2Encoder(stream, Registry, Heat1BackCompatibility);
         encoder.VisitTdf(tdf);
     }
 }

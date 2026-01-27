@@ -30,7 +30,7 @@ public class XmlEncoder : ITdfVisitor
             do
             {
                 ITdfMember member = enumerator.Current;
-                bool visited = member.Visit(this, value);
+                bool visited = member.Visit(this, value, visitHeader: true);
 
                 if (visited && !member.TdfInfo.IsUnique)
                 {
@@ -47,77 +47,77 @@ public class XmlEncoder : ITdfVisitor
         }
     }
 
-    public bool VisitBlazeObjectId(TdfObjectId value, Tdf parent)
+    public bool VisitBlazeObjectId(TdfObjectId value, Tdf parent, bool visitHeader)
     {
         //TODO: Figure out the format
         return false;
     }
 
-    public bool VisitBlazeObjectType(TdfObjectType value, Tdf parent)
+    public bool VisitBlazeObjectType(TdfObjectType value, Tdf parent, bool visitHeader)
     {
         //TODO: Figure out the format
         return false;
     }
 
-    public bool VisitBlob(TdfBlob value, Tdf parent)
+    public bool VisitBlob(TdfBlob value, Tdf parent, bool visitHeader)
     {
         //TODO: Figure out the format
         return false;
     }
 
-    public bool VisitBool(TdfBool value, Tdf parent)
+    public bool VisitBool(TdfBool value, Tdf parent, bool visitHeader)
     {
         return AddToRoot(value);
     }
 
-    public bool VisitEnum<TEnum>(TdfEnum<TEnum> value, Tdf parent) where TEnum : Enum, new()
+    public bool VisitEnum<TEnum>(TdfEnum<TEnum> value, Tdf parent, bool visitHeader) where TEnum : Enum, new()
     {
         return AddToRoot(value);
     }
 
-    public bool VisitFloat(TdfFloat value, Tdf parent)
+    public bool VisitFloat(TdfFloat value, Tdf parent, bool visitHeader)
     {
         return AddToRoot(value);
     }
 
-    public bool VisitInt16(TdfInt16 value, Tdf parent)
+    public bool VisitInt16(TdfInt16 value, Tdf parent, bool visitHeader)
     {
         return AddToRoot(value);
     }
 
-    public bool VisitInt32(TdfInt32 value, Tdf parent)
+    public bool VisitInt32(TdfInt32 value, Tdf parent, bool visitHeader)
     {
         return AddToRoot(value);
     }
 
-    public bool VisitInt64(TdfInt64 value, Tdf parent)
+    public bool VisitInt64(TdfInt64 value, Tdf parent, bool visitHeader)
     {
         return AddToRoot(value);
     }
 
-    public bool VisitInt8(TdfInt8 value, Tdf parent)
+    public bool VisitInt8(TdfInt8 value, Tdf parent, bool visitHeader)
     {
         return AddToRoot(value);
     }
 
-    public bool VisitList<T>(TdfList<T> value, Tdf parent)
+    public bool VisitList<T>(TdfList<T> value, Tdf parent, bool visitHeader)
     {
         //TODO: Figure out the format
         return false;
     }
 
-    public bool VisitMap<TKey, TValue>(TdfMap<TKey, TValue> value, Tdf parent) where TKey : notnull
+    public bool VisitMap<TKey, TValue>(TdfMap<TKey, TValue> value, Tdf parent, bool visitHeader) where TKey : notnull
     {
         //TODO: Figure out the format
         return false;
     }
 
-    public bool VisitString(TdfString value, Tdf parent)
+    public bool VisitString(TdfString value, Tdf parent, bool visitHeader)
     {
         return AddToRoot(value);
     }
 
-    public bool VisitStruct<TStruct>(TdfStruct<TStruct> value, Tdf parent) where TStruct : Tdf?, new()
+    public bool VisitStruct<TStruct>(TdfStruct<TStruct> value, Tdf parent, bool visitHeader) where TStruct : Tdf?, new()
     {
         if (value.Value != null && !value.IsSet())
             return false;
@@ -129,32 +129,32 @@ public class XmlEncoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitTimeValue(TdfTimeValue value, Tdf parent)
+    public bool VisitTimeValue(TdfTimeValue value, Tdf parent, bool visitHeader)
     {
         return AddToRoot(value, value.Value.Microseconds);
     }
 
-    public bool VisitUInt16(TdfUInt16 value, Tdf parent)
+    public bool VisitUInt16(TdfUInt16 value, Tdf parent, bool visitHeader)
     {
         return AddToRoot(value);
     }
 
-    public bool VisitUInt32(TdfUInt32 value, Tdf parent)
+    public bool VisitUInt32(TdfUInt32 value, Tdf parent, bool visitHeader)
     {
         return AddToRoot(value);
     }
 
-    public bool VisitUInt64(TdfUInt64 value, Tdf parent)
+    public bool VisitUInt64(TdfUInt64 value, Tdf parent, bool visitHeader)
     {
         return AddToRoot(value);
     }
 
-    public bool VisitUInt8(TdfUInt8 value, Tdf parent)
+    public bool VisitUInt8(TdfUInt8 value, Tdf parent, bool visitHeader)
     {
         return AddToRoot(value);
     }
 
-    public bool VisitUnion<TUnion>(TdfUnion<TUnion> value, Tdf parent) where TUnion : Union, new()
+    public bool VisitUnion<TUnion>(TdfUnion<TUnion> value, Tdf parent, bool visitHeader) where TUnion : Union, new()
     {
         if (value.Value != null && !value.IsSet())
             return false;
@@ -183,7 +183,7 @@ public class XmlEncoder : ITdfVisitor
         return false;
     }
 
-    public bool VisitVariable(TdfVariable value, Tdf parent)
+    public bool VisitVariable(TdfVariable value, Tdf parent, bool visitHeader)
     {
         //TODO: Figure out the format
         return false;

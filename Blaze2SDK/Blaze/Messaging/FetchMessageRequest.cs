@@ -13,7 +13,7 @@ public class FetchMessageRequest : Tdf
         new TdfMemberInfo("PageSize", "mPageSize", 0xC33A7A00, TdfType.UInt32, 3, true), // PSIZ
         new TdfMemberInfo("StatusMask", "mStatusMask", 0xCEDCEB00, TdfType.UInt32, 4, true), // SMSK
         new TdfMemberInfo("OrderBy", "mOrderBy", 0xCEFCB400, TdfType.Enum, 5, true), // SORT
-        new TdfMemberInfo("Source", "mSource", 0xCF28E500, TdfType.UInt64, 6, true), // SRCE
+        new TdfMemberInfo("Source", "mSource", 0xCF28E500, TdfType.ObjectId, 6, true), // SRCE
         new TdfMemberInfo("Status", "mStatus", 0xCF487400, TdfType.UInt32, 7, true), // STAT
         new TdfMemberInfo("Type", "mType", 0xD39C2500, TdfType.UInt32, 8, true), // TYPE
     ];
@@ -25,7 +25,7 @@ public class FetchMessageRequest : Tdf
     private TdfUInt32 _pageSize = new(__typeInfos[3]);
     private TdfUInt32 _statusMask = new(__typeInfos[4]);
     private TdfEnum<Blaze2SDK.Blaze.Messaging.MessageOrder> _orderBy = new(__typeInfos[5]);
-    private TdfUInt64 _source = new(__typeInfos[6]);
+    private TdfObjectId _source = new(__typeInfos[6]);
     private TdfUInt32 _status = new(__typeInfos[7]);
     private TdfUInt32 _type = new(__typeInfos[8]);
 
@@ -87,7 +87,7 @@ public class FetchMessageRequest : Tdf
         set => _orderBy.Value = value;
     }
 
-    public ulong Source
+    public ObjectId Source
     {
         get => _source.Value;
         set => _source.Value = value;

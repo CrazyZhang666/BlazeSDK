@@ -25,9 +25,9 @@ public class TdfUnion<TUnion> : TdfMember<TUnion> where TUnion : Union, new()
         return UserSet && Value != null;
     }
 
-    public override bool Visit(ITdfVisitor visitor, Tdf parent)
+    public override bool Visit(ITdfVisitor visitor, Tdf parent, bool visitHeader)
     {
-        return visitor.VisitUnion(this, parent);
+        return visitor.VisitUnion(this, parent, visitHeader);
     }
 
     public override string ToString()

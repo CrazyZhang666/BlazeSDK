@@ -8,7 +8,7 @@ public class StartMatchmakingRequest : Tdf
 {
     static readonly TdfMemberInfo[] __typeInfos = [
         new TdfMemberInfo("GameAttribs", "mGameAttribs", 0x874D3200, TdfType.Map, 0, true), // ATTR
-        new TdfMemberInfo("GroupId", "mGroupId", 0x8B4C2C00, TdfType.UInt64, 1, true), // BTPL
+        new TdfMemberInfo("GroupId", "mGroupId", 0x8B4C2C00, TdfType.ObjectId, 1, true), // BTPL
         new TdfMemberInfo("CriteriaData", "mCriteriaData", 0x8F2A7400, TdfType.Struct, 2, true), // CRIT
         new TdfMemberInfo("SessionDurationMS", "mSessionDurationMS", 0x935C8000, TdfType.UInt32, 3, true), // DUR
         new TdfMemberInfo("EntryCriteriaMap", "mEntryCriteriaMap", 0x963CA900, TdfType.Map, 4, true), // ECRI
@@ -29,7 +29,7 @@ public class StartMatchmakingRequest : Tdf
     private ITdfMember[] __members;
 
     private TdfMap<string, string> _gameAttribs = new(__typeInfos[0]);
-    private TdfUInt64 _groupId = new(__typeInfos[1]);
+    private TdfObjectId _groupId = new(__typeInfos[1]);
     private TdfStruct<Blaze2SDK.Blaze.GameManager.MatchmakingCriteriaData?> _criteriaData = new(__typeInfos[2]);
     private TdfUInt32 _sessionDurationMS = new(__typeInfos[3]);
     private TdfMap<string, string> _entryCriteriaMap = new(__typeInfos[4]);
@@ -84,7 +84,7 @@ public class StartMatchmakingRequest : Tdf
         set => _gameAttribs.Value = value;
     }
 
-    public ulong GroupId
+    public ObjectId GroupId
     {
         get => _groupId.Value;
         set => _groupId.Value = value;

@@ -8,7 +8,7 @@ public class JoinGameRequest : Tdf
 {
     static readonly TdfMemberInfo[] __typeInfos = [
         new TdfMemberInfo("PlayerAttribs", "mPlayerAttribs", 0x874D3200, TdfType.Map, 0, true), // ATTR
-        new TdfMemberInfo("GroupId", "mGroupId", 0x8B4C2C00, TdfType.UInt64, 1, true), // BTPL
+        new TdfMemberInfo("GroupId", "mGroupId", 0x8B4C2C00, TdfType.ObjectId, 1, true), // BTPL
         new TdfMemberInfo("GameId", "mGameId", 0x9E990000, TdfType.UInt32, 2, true), // GID
         new TdfMemberInfo("GameProtocolVersionString", "mGameProtocolVersionString", 0x9F697200, TdfType.String, 3, true), // GVER
         new TdfMemberInfo("JoinMethod", "mJoinMethod", 0xAAD97400, TdfType.Enum, 4, true), // JMET
@@ -21,7 +21,7 @@ public class JoinGameRequest : Tdf
     private ITdfMember[] __members;
 
     private TdfMap<string, string> _playerAttribs = new(__typeInfos[0]);
-    private TdfUInt64 _groupId = new(__typeInfos[1]);
+    private TdfObjectId _groupId = new(__typeInfos[1]);
     private TdfUInt32 _gameId = new(__typeInfos[2]);
     private TdfString _gameProtocolVersionString = new(__typeInfos[3]);
     private TdfEnum<Blaze2SDK.Blaze.GameManager.JoinMethod> _joinMethod = new(__typeInfos[4]);
@@ -60,7 +60,7 @@ public class JoinGameRequest : Tdf
         set => _playerAttribs.Value = value;
     }
 
-    public ulong GroupId
+    public ObjectId GroupId
     {
         get => _groupId.Value;
         set => _groupId.Value = value;

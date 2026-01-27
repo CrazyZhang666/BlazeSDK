@@ -94,6 +94,11 @@ public class BlazeServerContextOptions
     public ITdfRegistry TdfRegistry { get; } = new TdfRegistry();
 
     /// <summary>
+    /// Option meant for Heat2 serializer
+    /// </summary>
+    public bool Heat1BackCompatibility { get; set; } = true;
+
+    /// <summary>
     /// The maximum backlog of connections.
     /// </summary>
     public int Backlog { get; set; } = -1;

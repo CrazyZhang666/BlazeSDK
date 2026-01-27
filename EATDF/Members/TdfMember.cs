@@ -26,7 +26,7 @@ public abstract class TdfMember<T> : ITdfMember
         _setByUser = false;
     }
     public abstract bool IsSet();
-    public abstract bool Visit(ITdfVisitor visitor, Tdf parent);
+    public abstract bool Visit(ITdfVisitor visitor, Tdf parent, bool visitHeader);
     public abstract T DefaultValue();
     public abstract T InitValue();
 

@@ -1,4 +1,5 @@
 using Blaze.Core;
+using Blaze2SDK.Blaze.Locker;
 using EATDF;
 using EATDF.Types;
 
@@ -156,7 +157,7 @@ public static class LockerComponentBase
                 Func = async (req, ctx) => await ListContentAsync(req, ctx).ConfigureAwait(false)
             });
             
-            RegisterCommand(new RpcCommandFunc<EmptyMessage, EmptyMessage, EmptyMessage>()
+            RegisterCommand(new RpcCommandFunc<GetContentTopNRequest, GetContentTopNResponse, EmptyMessage>()
             {
                 Id = (ushort)LockerComponentCommand.getTopN,
                 Name = "getTopN",
@@ -300,13 +301,13 @@ public static class LockerComponentBase
         {
             throw new LockerException(ServerError.ERR_COMMAND_NOT_FOUND);
         }
-        
+
         /// <summary>
         /// This method is called when server receives a <b>LockerComponent::getTopN</b> command.<br/>
-        /// Request type: <see cref="EmptyMessage"/><br/>
-        /// Response type: <see cref="EmptyMessage"/><br/>
+        /// Request type: <see cref="GetContentTopNRequest"/><br/>
+        /// Response type: <see cref="GetContentTopNResponse"/><br/>
         /// </summary>
-        public virtual Task<EmptyMessage> GetTopNAsync(EmptyMessage request, BlazeRpcContext context)
+        public virtual Task<GetContentTopNResponse> GetTopNAsync(GetContentTopNRequest request, BlazeRpcContext context)
         {
             throw new LockerException(ServerError.ERR_COMMAND_NOT_FOUND);
         }

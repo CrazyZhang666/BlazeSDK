@@ -15,16 +15,20 @@ internal class Heat2Encoder : ITdfVisitor
 {
     Heat2Writer writer;
     public ITdfRegistry Registry { get; }
+    public bool Heat1BackCompatibility { get; }
+
     public Heat2Encoder(Stream stream)
     {
         writer = new Heat2Writer(this, stream);
         Registry = new TdfRegistry();
+        Heat1BackCompatibility = true;
     }
 
-    public Heat2Encoder(Stream stream, ITdfRegistry registry)
+    public Heat2Encoder(Stream stream, ITdfRegistry registry, bool heat1BackCompatibility)
     {
         writer = new Heat2Writer(this, stream);
         Registry = registry;
+        Heat1BackCompatibility = heat1BackCompatibility;
     }
 
     public void VisitTdf(Tdf value)
@@ -36,7 +40,7 @@ internal class Heat2Encoder : ITdfVisitor
             do
             {
                 ITdfMember member = enumerator.Current;
-                bool visited = member.Visit(this, value);
+                bool visited = member.Visit(this, value, visitHeader: true);
 
                 if (visited && !member.TdfInfo.IsUnique)
                 {
@@ -53,189 +57,189 @@ internal class Heat2Encoder : ITdfVisitor
         }
     }
 
-    public bool VisitBlazeObjectId(TdfObjectId value, Tdf parent)
+    public bool VisitBlazeObjectId(TdfObjectId value, Tdf parent, bool visitHeader)
     {
-        if (!putHeader(value, Heat2Type.BlazeObjectId))
+        if (visitHeader && !putHeader(value, Heat2Type.BlazeObjectId))
             return false;
 
         writer.WriteObjectId(value.Value);
         return true;
     }
 
-    public bool VisitBlazeObjectType(TdfObjectType value, Tdf parent)
+    public bool VisitBlazeObjectType(TdfObjectType value, Tdf parent, bool visitHeader)
     {
-        if (!putHeader(value, Heat2Type.BlazeObjectType))
+        if (visitHeader && !putHeader(value, Heat2Type.BlazeObjectType))
             return false;
 
         writer.WriteObjectType(value.Value);
         return true;
     }
 
-    public bool VisitBlob(TdfBlob value, Tdf parent)
+    public bool VisitBlob(TdfBlob value, Tdf parent, bool visitHeader)
     {
-        if (!putHeader(value, Heat2Type.Binary))
+        if (visitHeader && !putHeader(value, Heat2Type.Binary))
             return false;
 
         writer.WriteBlob(value.Value);
         return true;
     }
 
-    public bool VisitBool(TdfBool value, Tdf parent)
+    public bool VisitBool(TdfBool value, Tdf parent, bool visitHeader)
     {
-        if (!putHeader(value, Heat2Type.Integer))
+        if (visitHeader && !putHeader(value, Heat2Type.Integer))
             return false;
 
         writer.WriteBool(value.Value);
         return true;
     }
 
-    public bool VisitEnum<TEnum>(TdfEnum<TEnum> value, Tdf parent) where TEnum : Enum, new()
+    public bool VisitEnum<TEnum>(TdfEnum<TEnum> value, Tdf parent, bool visitHeader) where TEnum : Enum, new()
     {
-        if (!putHeader(value, Heat2Type.Integer))
+        if (visitHeader && !putHeader(value, Heat2Type.Integer))
             return false;
 
         writer.WriteEnum(value.Value);
         return true;
     }
 
-    public bool VisitFloat(TdfFloat value, Tdf parent)
+    public bool VisitFloat(TdfFloat value, Tdf parent, bool visitHeader)
     {
-        if (!putHeader(value, Heat2Type.Float))
+        if (visitHeader && !putHeader(value, Heat2Type.Float))
             return false;
 
         writer.WriteFloat(value.Value);
         return true;
     }
 
-    public bool VisitInt16(TdfInt16 value, Tdf parent)
+    public bool VisitInt16(TdfInt16 value, Tdf parent, bool visitHeader)
     {
-        if (!putHeader(value, Heat2Type.Integer))
+        if (visitHeader && !putHeader(value, Heat2Type.Integer))
             return false;
 
         writer.WriteInt16(value.Value);
         return true;
     }
 
-    public bool VisitInt32(TdfInt32 value, Tdf parent)
+    public bool VisitInt32(TdfInt32 value, Tdf parent, bool visitHeader)
     {
-        if (!putHeader(value, Heat2Type.Integer))
+        if (visitHeader && !putHeader(value, Heat2Type.Integer))
             return false;
 
         writer.WriteInt32(value.Value);
         return true;
     }
 
-    public bool VisitInt64(TdfInt64 value, Tdf parent)
+    public bool VisitInt64(TdfInt64 value, Tdf parent, bool visitHeader)
     {
-        if (!putHeader(value, Heat2Type.Integer))
+        if (visitHeader && !putHeader(value, Heat2Type.Integer))
             return false;
 
         writer.WriteInt64(value.Value);
         return true;
     }
 
-    public bool VisitInt8(TdfInt8 value, Tdf parent)
+    public bool VisitInt8(TdfInt8 value, Tdf parent, bool visitHeader)
     {
-        if (!putHeader(value, Heat2Type.Integer))
+        if (visitHeader && !putHeader(value, Heat2Type.Integer))
             return false;
 
         writer.WriteInt8(value.Value);
         return true;
     }
 
-    public bool VisitList<T>(TdfList<T> value, Tdf parent)
+    public bool VisitList<T>(TdfList<T> value, Tdf parent, bool visitHeader)
     {
-        if (!putHeader(value, Heat2Type.List))
+        if (visitHeader && !putHeader(value, Heat2Type.List))
             return false;
 
         writer.WriteList(value.Value);
         return true;
     }
 
-    public bool VisitMap<TKey, TValue>(TdfMap<TKey, TValue> value, Tdf parent) where TKey : notnull
+    public bool VisitMap<TKey, TValue>(TdfMap<TKey, TValue> value, Tdf parent, bool visitHeader) where TKey : notnull
     {
-        if (!putHeader(value, Heat2Type.Map))
+        if (visitHeader && !putHeader(value, Heat2Type.Map))
             return false;
 
         writer.WriteMap(value.Value);
         return true;
     }
 
-    public bool VisitString(TdfString value, Tdf parent)
+    public bool VisitString(TdfString value, Tdf parent, bool visitHeader)
     {
-        if (!putHeader(value, Heat2Type.String))
+        if (visitHeader && !putHeader(value, Heat2Type.String))
             return false;
 
         writer.WriteString(value.Value);
         return true;
     }
 
-    public bool VisitStruct<TStruct>(TdfStruct<TStruct> value, Tdf parent) where TStruct : Tdf?, new()
+    public bool VisitStruct<TStruct>(TdfStruct<TStruct> value, Tdf parent, bool visitHeader) where TStruct : Tdf?, new()
     {
-        if (!putHeader(value, Heat2Type.Struct))
+        if (visitHeader && !putHeader(value, Heat2Type.Struct))
             return false;
 
         writer.WriteStruct(value.Value);
         return true;
     }
 
-    public bool VisitTimeValue(TdfTimeValue value, Tdf parent)
+    public bool VisitTimeValue(TdfTimeValue value, Tdf parent, bool visitHeader)
     {
-        if (!putHeader(value, Heat2Type.Integer))
+        if (visitHeader && !putHeader(value, Heat2Type.Integer))
             return false;
 
         writer.WriteTimeValue(value.Value);
         return true;
     }
 
-    public bool VisitUInt16(TdfUInt16 value, Tdf parent)
+    public bool VisitUInt16(TdfUInt16 value, Tdf parent, bool visitHeader)
     {
-        if (!putHeader(value, Heat2Type.Integer))
+        if (visitHeader && !putHeader(value, Heat2Type.Integer))
             return false;
 
         writer.WriteUInt16(value.Value);
         return true;
     }
 
-    public bool VisitUInt32(TdfUInt32 value, Tdf parent)
+    public bool VisitUInt32(TdfUInt32 value, Tdf parent, bool visitHeader)
     {
-        if (!putHeader(value, Heat2Type.Integer))
+        if (visitHeader && !putHeader(value, Heat2Type.Integer))
             return false;
 
         writer.WriteUInt32(value.Value);
         return true;
     }
 
-    public bool VisitUInt64(TdfUInt64 value, Tdf parent)
+    public bool VisitUInt64(TdfUInt64 value, Tdf parent, bool visitHeader)
     {
-        if (!putHeader(value, Heat2Type.Integer))
+        if (visitHeader && !putHeader(value, Heat2Type.Integer))
             return false;
 
         writer.WriteUInt64(value.Value);
         return true;
     }
 
-    public bool VisitUInt8(TdfUInt8 value, Tdf parent)
+    public bool VisitUInt8(TdfUInt8 value, Tdf parent, bool visitHeader)
     {
-        if (!putHeader(value, Heat2Type.Integer))
+        if (visitHeader && !putHeader(value, Heat2Type.Integer))
             return false;
 
         writer.WriteUInt8(value.Value);
         return true;
     }
 
-    public bool VisitUnion<TUnion>(TdfUnion<TUnion> value, Tdf parent) where TUnion : Union, new()
+    public bool VisitUnion<TUnion>(TdfUnion<TUnion> value, Tdf parent, bool visitHeader) where TUnion : Union, new()
     {
-        if (!putHeader(value, Heat2Type.Union))
+        if (visitHeader && !putHeader(value, Heat2Type.Union))
             return false;
 
         writer.WriteUnion(value.Value);
         return true;
     }
 
-    public bool VisitVariable(TdfVariable value, Tdf parent)
+    public bool VisitVariable(TdfVariable value, Tdf parent, bool visitHeader)
     {
-        if (!putHeader(value, Heat2Type.Variable))
+        if (visitHeader && !putHeader(value, Heat2Type.Variable))
             return false;
 
         writer.WriteVariable(value.Value);

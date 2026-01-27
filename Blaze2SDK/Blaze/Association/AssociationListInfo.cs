@@ -8,7 +8,7 @@ public class AssociationListInfo : Tdf
 {
     static readonly TdfMemberInfo[] __typeInfos = [
         new TdfMemberInfo("ListMemberInfoVector", "mListMemberInfoVector", 0x86CB6C00, TdfType.List, 0, true), // ALML
-        new TdfMemberInfo("BlazeObjId", "mBlazeObjId", 0x8AFA6400, TdfType.UInt64, 1, true), // BOID
+        new TdfMemberInfo("BlazeObjId", "mBlazeObjId", 0x8AFA6400, TdfType.ObjectId, 1, true), // BOID
         new TdfMemberInfo("Id", "mId", 0xB2990000, TdfType.UInt32, 2, true), // LID
         new TdfMemberInfo("MaxSize", "mMaxSize", 0xB2DCC000, TdfType.UInt32, 3, true), // LMS
         new TdfMemberInfo("Name", "mName", 0xB2EB4000, TdfType.String, 4, true), // LNM
@@ -18,7 +18,7 @@ public class AssociationListInfo : Tdf
     private ITdfMember[] __members;
 
     private TdfList<Blaze2SDK.Blaze.Association.ListMemberInfo> _listMemberInfoVector = new(__typeInfos[0]);
-    private TdfUInt64 _blazeObjId = new(__typeInfos[1]);
+    private TdfObjectId _blazeObjId = new(__typeInfos[1]);
     private TdfUInt32 _id = new(__typeInfos[2]);
     private TdfUInt32 _maxSize = new(__typeInfos[3]);
     private TdfString _name = new(__typeInfos[4]);
@@ -51,7 +51,7 @@ public class AssociationListInfo : Tdf
         set => _listMemberInfoVector.Value = value;
     }
 
-    public ulong BlazeObjId
+    public ObjectId BlazeObjId
     {
         get => _blazeObjId.Value;
         set => _blazeObjId.Value = value;

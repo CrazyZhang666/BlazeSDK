@@ -16,25 +16,30 @@ public class Heat2Decoder : ITdfVisitor
 {
     Heat2Reader reader;
     public ITdfRegistry Registry { get; }
+    public bool Heat1BackCompatibility { get; }
     public bool StreamValid => reader.StreamValid;
 
-    public Heat2Decoder(Stream stream)
+
+
+    public Heat2Decoder(Stream stream, bool heat1BackCompatibility)
     {
         reader = new Heat2Reader(this, stream);
         Registry = new TdfRegistry();
+        Heat1BackCompatibility = heat1BackCompatibility;
     }
 
-    public Heat2Decoder(byte[] data) : this(new MemoryStream(data))
+    public Heat2Decoder(byte[] data, bool heat1BackCompatibility) : this(new MemoryStream(data), heat1BackCompatibility)
     {
     }
 
-    public Heat2Decoder(Stream stream, ITdfRegistry registry)
+    public Heat2Decoder(Stream stream, ITdfRegistry registry, bool heat1BackCompatibility)
     {
         reader = new Heat2Reader(this, stream);
         Registry = registry;
+        Heat1BackCompatibility = heat1BackCompatibility;
     }
 
-    public Heat2Decoder(byte[] data, ITdfRegistry registry) : this(new MemoryStream(data), registry)
+    public Heat2Decoder(byte[] data, ITdfRegistry registry, bool heat1BackCompatibility) : this(new MemoryStream(data), registry, heat1BackCompatibility)
     {
     }
 
@@ -47,7 +52,7 @@ public class Heat2Decoder : ITdfVisitor
             do
             {
                 ITdfMember member = enumerator.Current;
-                bool visited = member.Visit(this, value);
+                bool visited = member.Visit(this, value, visitHeader: true);
 
                 if (visited && !member.TdfInfo.IsUnique)
                 {
@@ -73,9 +78,9 @@ public class Heat2Decoder : ITdfVisitor
 
     }
 
-    public bool VisitBlazeObjectId(TdfObjectId value, Tdf parent)
+    public bool VisitBlazeObjectId(TdfObjectId value, Tdf parent, bool visitHeader)
     {
-        if (!getHeader(parent, value, Heat2Type.BlazeObjectId))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.BlazeObjectId))
             return false;
 
         if (!reader.TryReadObjectId(out ObjectId val))
@@ -85,9 +90,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitBlazeObjectType(TdfObjectType value, Tdf parent)
+    public bool VisitBlazeObjectType(TdfObjectType value, Tdf parent, bool visitHeader)
     {
-        if (!getHeader(parent, value, Heat2Type.BlazeObjectType))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.BlazeObjectType))
             return false;
 
         if (!reader.TryReadObjectType(out ObjectType val))
@@ -97,9 +102,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitBlob(TdfBlob value, Tdf parent)
+    public bool VisitBlob(TdfBlob value, Tdf parent, bool visitHeader)
     {
-        if (!getHeader(parent, value, Heat2Type.Binary))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.Binary))
             return false;
 
         if(!reader.TryReadBlob(out byte[] val))
@@ -109,9 +114,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitBool(TdfBool value, Tdf parent)
+    public bool VisitBool(TdfBool value, Tdf parent, bool visitHeader)
     {
-        if (!getHeader(parent, value, Heat2Type.Integer))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.Integer))
             return false;
 
         if (!reader.TryReadBool(out bool val))
@@ -121,9 +126,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitEnum<TEnum>(TdfEnum<TEnum> value, Tdf parent) where TEnum : Enum, new()
+    public bool VisitEnum<TEnum>(TdfEnum<TEnum> value, Tdf parent, bool visitHeader) where TEnum : Enum, new()
     {
-        if (!getHeader(parent, value, Heat2Type.Integer))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.Integer))
             return false;
 
         if (!reader.TryReadEnum(out TEnum val))
@@ -133,9 +138,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitFloat(TdfFloat value, Tdf parent)
+    public bool VisitFloat(TdfFloat value, Tdf parent, bool visitHeader)
     {
-        if (!getHeader(parent, value, Heat2Type.Float))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.Float))
             return false;
 
         if (!reader.TryReadFloat(out float val))
@@ -145,9 +150,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitInt16(TdfInt16 value, Tdf parent)
+    public bool VisitInt16(TdfInt16 value, Tdf parent, bool visitHeader)
     {
-        if(!getHeader(parent, value, Heat2Type.Integer))
+        if(visitHeader && !getHeader(parent, value, Heat2Type.Integer))
             return false;
 
         if (!reader.TryReadInt16(out short val))
@@ -157,9 +162,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitInt32(TdfInt32 value, Tdf parent)
+    public bool VisitInt32(TdfInt32 value, Tdf parent, bool visitHeader)
     {
-        if (!getHeader(parent, value, Heat2Type.Integer))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.Integer))
             return false;
 
         if (!reader.TryReadInt32(out int val))
@@ -169,9 +174,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitInt64(TdfInt64 value, Tdf parent)
+    public bool VisitInt64(TdfInt64 value, Tdf parent, bool visitHeader)
     {
-        if (!getHeader(parent, value, Heat2Type.Integer))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.Integer))
             return false;
 
         if (!reader.TryReadInt64(out long val))
@@ -181,9 +186,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitInt8(TdfInt8 value, Tdf parent)
+    public bool VisitInt8(TdfInt8 value, Tdf parent, bool visitHeader)
     {
-        if (!getHeader(parent, value, Heat2Type.Integer))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.Integer))
             return false;
 
         if (!reader.TryReadInt8(out sbyte val))
@@ -193,9 +198,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitList<T>(TdfList<T> value, Tdf parent)
+    public bool VisitList<T>(TdfList<T> value, Tdf parent, bool visitHeader)
     {
-        if (!getHeader(parent, value, Heat2Type.List))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.List))
             return false;
 
         if (!reader.TryReadList(out IList<T> val))
@@ -205,9 +210,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitMap<TKey, TValue>(TdfMap<TKey, TValue> value, Tdf parent) where TKey : notnull
+    public bool VisitMap<TKey, TValue>(TdfMap<TKey, TValue> value, Tdf parent, bool visitHeader) where TKey : notnull
     {
-        if (!getHeader(parent, value, Heat2Type.Map))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.Map))
             return false;
 
         if (!reader.TryReadMap(out IDictionary<TKey, TValue> val))
@@ -217,9 +222,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitString(TdfString value, Tdf parent)
+    public bool VisitString(TdfString value, Tdf parent, bool visitHeader)
     {
-        if(!getHeader(parent, value, Heat2Type.String))
+        if(visitHeader && !getHeader(parent, value, Heat2Type.String))
             return false;
 
         if (!reader.TryReadString(out string str))
@@ -229,9 +234,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitStruct<TStruct>(TdfStruct<TStruct> value, Tdf parent) where TStruct : Tdf?, new()
+    public bool VisitStruct<TStruct>(TdfStruct<TStruct> value, Tdf parent, bool visitHeader) where TStruct : Tdf?, new()
     {
-        if (!getHeader(parent, value, Heat2Type.Struct))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.Struct))
             return false;
 
         if (!reader.TryReadStruct(out TStruct? val))
@@ -241,9 +246,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitTimeValue(TdfTimeValue value, Tdf parent)
+    public bool VisitTimeValue(TdfTimeValue value, Tdf parent, bool visitHeader)
     {
-        if (!getHeader(parent, value, Heat2Type.Integer))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.Integer))
             return false;
 
         if (!reader.TryReadTimeValue(out TimeValue val))
@@ -253,9 +258,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitUInt16(TdfUInt16 value, Tdf parent)
+    public bool VisitUInt16(TdfUInt16 value, Tdf parent, bool visitHeader)
     {
-        if (!getHeader(parent, value, Heat2Type.Integer))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.Integer))
             return false;
 
         if (!reader.TryReadUInt16(out ushort val))
@@ -265,9 +270,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitUInt32(TdfUInt32 value, Tdf parent)
+    public bool VisitUInt32(TdfUInt32 value, Tdf parent, bool visitHeader)
     {
-        if (!getHeader(parent, value, Heat2Type.Integer))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.Integer))
             return false;
 
         if (!reader.TryReadUInt32(out uint val))
@@ -277,9 +282,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitUInt64(TdfUInt64 value, Tdf parent)
+    public bool VisitUInt64(TdfUInt64 value, Tdf parent, bool visitHeader)
     {
-        if (!getHeader(parent, value, Heat2Type.Integer))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.Integer))
             return false;
 
         if (!reader.TryReadUInt64(out ulong val))
@@ -289,9 +294,9 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitUInt8(TdfUInt8 value, Tdf parent)
+    public bool VisitUInt8(TdfUInt8 value, Tdf parent, bool visitHeader)
     {
-        if (!getHeader(parent, value, Heat2Type.Integer))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.Integer))
             return false;
 
         if (!reader.TryReadUInt8(out byte val))
@@ -301,21 +306,21 @@ public class Heat2Decoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitUnion<TUnion>(TdfUnion<TUnion> value, Tdf parent) where TUnion : Union, new()
+    public bool VisitUnion<TUnion>(TdfUnion<TUnion> value, Tdf parent, bool visitHeader) where TUnion : Union, new()
     {
-        if (!getHeader(parent, value, Heat2Type.Union))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.Union))
             return false;
 
-        if (!reader.TryReadUnion(out TUnion val))
+        if (!reader.TryReadUnion(out TUnion val, visitHeader: true))
             return false;
 
         value.Value = val;
         return true;
     }
 
-    public bool VisitVariable(TdfVariable value, Tdf parent)
+    public bool VisitVariable(TdfVariable value, Tdf parent, bool visitHeader)
     {
-        if (!getHeader(parent, value, Heat2Type.Variable))
+        if (visitHeader && !getHeader(parent, value, Heat2Type.Variable))
             return false;
 
         if (!reader.TryReadVariable(out object? val))

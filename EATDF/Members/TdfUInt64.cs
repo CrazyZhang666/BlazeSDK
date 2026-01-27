@@ -23,9 +23,9 @@ public class TdfUInt64 : TdfMember<ulong>
         return UserSet;
     }
 
-    public override bool Visit(ITdfVisitor visitor, Tdf parent)
+    public override bool Visit(ITdfVisitor visitor, Tdf parent, bool visitHeader)
     {
-        return visitor.VisitUInt64(this, parent);
+        return visitor.VisitUInt64(this, parent, visitHeader);
     }
 
     public override string ToString()

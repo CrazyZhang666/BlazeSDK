@@ -14,13 +14,13 @@ public class PrintVisitor : ITdfVisitor
         sb.AddTab();
 
         foreach (ITdfMember member in value.AllMembers())
-            member.Visit(this, value);
+            member.Visit(this, value, visitHeader: true);
 
         sb.RemoveTab();
         sb.AppendWithTab("}");
     }
 
-    public bool VisitBlob(TdfBlob value, Tdf parent)
+    public bool VisitBlob(TdfBlob value, Tdf parent, bool visitHeader)
     {
         if (value.Value == null)
         {
@@ -32,61 +32,61 @@ public class PrintVisitor : ITdfVisitor
         return true;
     }
 
-    public bool VisitBool(TdfBool value, Tdf parent)
+    public bool VisitBool(TdfBool value, Tdf parent, bool visitHeader)
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatBool(value.Value)}");
         return true;
     }
 
-    public bool VisitFloat(TdfFloat value, Tdf parent)
+    public bool VisitFloat(TdfFloat value, Tdf parent, bool visitHeader)
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatFloat(value.Value)}");
         return true;
     }
 
-    public bool VisitInt16(TdfInt16 value, Tdf parent)
+    public bool VisitInt16(TdfInt16 value, Tdf parent, bool visitHeader)
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatInt16(value.Value)}");
         return true;
     }
 
-    public bool VisitInt32(TdfInt32 value, Tdf parent)
+    public bool VisitInt32(TdfInt32 value, Tdf parent, bool visitHeader)
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatInt32(value.Value)}");
         return true;
     }
 
-    public bool VisitInt64(TdfInt64 value, Tdf parent)
+    public bool VisitInt64(TdfInt64 value, Tdf parent, bool visitHeader)
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatInt64(value.Value)}");
         return true;
     }
 
-    public bool VisitInt8(TdfInt8 value, Tdf parent)
+    public bool VisitInt8(TdfInt8 value, Tdf parent, bool visitHeader)
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatInt8(value.Value)}");
         return true;
     }
 
-    public bool VisitList<T>(TdfList<T> value, Tdf parent)
+    public bool VisitList<T>(TdfList<T> value, Tdf parent, bool visitHeader)
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatList(value.Value)}");
         return true;
     }
 
-    public bool VisitMap<TKey, TValue>(TdfMap<TKey, TValue> value, Tdf parent) where TKey : notnull
+    public bool VisitMap<TKey, TValue>(TdfMap<TKey, TValue> value, Tdf parent, bool visitHeader) where TKey : notnull
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatMap(value.Value)}");
         return true;
     }
 
-    public bool VisitString(TdfString value, Tdf parent)
+    public bool VisitString(TdfString value, Tdf parent, bool visitHeader)
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatString(value.Value)}");
         return true;
     }
 
-    public bool VisitStruct<TStruct>(TdfStruct<TStruct> value, Tdf parent) where TStruct : Tdf?, new()
+    public bool VisitStruct<TStruct>(TdfStruct<TStruct> value, Tdf parent, bool visitHeader) where TStruct : Tdf?, new()
     {
         if (value.Value == null)
         {
@@ -100,7 +100,7 @@ public class PrintVisitor : ITdfVisitor
         Tdf tdf = value.Value;
 
         foreach (ITdfMember member in tdf.AllMembers())
-            member.Visit(this, tdf);
+            member.Visit(this, tdf, visitHeader: true);
 
         sb.RemoveTab();
         sb.AppendLine("}");
@@ -108,31 +108,31 @@ public class PrintVisitor : ITdfVisitor
         return true;
     }
 
-    public bool VisitUInt16(TdfUInt16 value, Tdf parent)
+    public bool VisitUInt16(TdfUInt16 value, Tdf parent, bool visitHeader)
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatUInt16(value.Value)}");
         return true;
     }
 
-    public bool VisitUInt32(TdfUInt32 value, Tdf parent)
+    public bool VisitUInt32(TdfUInt32 value, Tdf parent, bool visitHeader)
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatUInt32(value.Value)}");
         return true;
     }
 
-    public bool VisitUInt64(TdfUInt64 value, Tdf parent)
+    public bool VisitUInt64(TdfUInt64 value, Tdf parent, bool visitHeader)
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatUInt64(value.Value)}");
         return true;
     }
 
-    public bool VisitUInt8(TdfUInt8 value, Tdf parent)
+    public bool VisitUInt8(TdfUInt8 value, Tdf parent, bool visitHeader)
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatUInt8(value.Value)}");
         return true;
     }
 
-    public bool VisitVariable(TdfVariable value, Tdf parent)
+    public bool VisitVariable(TdfVariable value, Tdf parent, bool visitHeader)
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatVariable(value.Value)}");
         return true;
@@ -143,31 +143,31 @@ public class PrintVisitor : ITdfVisitor
         return $"{value.TdfInfo.Name}({value.TdfInfo.TagString})";
     }
 
-    public bool VisitBlazeObjectType(TdfObjectType value, Tdf parent)
+    public bool VisitBlazeObjectType(TdfObjectType value, Tdf parent, bool visitHeader)
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatBlazeObjectType(value.Value)}");
         return true;
     }
 
-    public bool VisitBlazeObjectId(TdfObjectId value, Tdf parent)
+    public bool VisitBlazeObjectId(TdfObjectId value, Tdf parent, bool visitHeader)
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatBlazeObjectId(value.Value)}");
         return true;
     }
 
-    public bool VisitTimeValue(TdfTimeValue value, Tdf parent)
+    public bool VisitTimeValue(TdfTimeValue value, Tdf parent, bool visitHeader)
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatTimeValue(value.Value)}");
         return true;
     }
 
-    public bool VisitEnum<TEnum>(TdfEnum<TEnum> value, Tdf parent) where TEnum : Enum, new()
+    public bool VisitEnum<TEnum>(TdfEnum<TEnum> value, Tdf parent, bool visitHeader) where TEnum : Enum, new()
     {
         sb.AppendLine($"{getFieldName(value)} = {StringFormatter.FormatEnum(value.Value)}");
         return true;
     }
 
-    public bool VisitUnion<TUnion>(TdfUnion<TUnion> tdfUnion, Tdf parent) where TUnion : Union, new()
+    public bool VisitUnion<TUnion>(TdfUnion<TUnion> tdfUnion, Tdf parent, bool visitHeader) where TUnion : Union, new()
     {
         sb.AppendLine($"{getFieldName(tdfUnion)} (union: {tdfUnion.Value.ActiveIndex}) = {{");
         sb.AddTab();
@@ -175,7 +175,7 @@ public class PrintVisitor : ITdfVisitor
         Tdf tdf = tdfUnion.Value;
 
         foreach (ITdfMember member in tdf.AllMembers())
-            member.Visit(this, tdf);
+            member.Visit(this, tdf, visitHeader: true);
 
         sb.RemoveTab();
         sb.AppendLine("}");

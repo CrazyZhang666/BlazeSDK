@@ -26,6 +26,11 @@ public class Report : Tdf
         ];
     }
 
+    public override uint GetTdfId()
+    {
+        return 0x7812B556;
+    }
+
     public override Tdf CreateNew() => new Report();
     public override ITdfMember[] GetMembers() => __members;
     public override TdfMemberInfo[] GetMemberInfos() => __typeInfos;

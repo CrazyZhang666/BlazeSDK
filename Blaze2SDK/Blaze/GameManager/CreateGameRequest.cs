@@ -9,7 +9,7 @@ public class CreateGameRequest : Tdf
     static readonly TdfMemberInfo[] __typeInfos = [
         new TdfMemberInfo("AdminPlayerList", "mAdminPlayerList", 0x864B6E00, TdfType.List, 0, true), // ADMN
         new TdfMemberInfo("GameAttribs", "mGameAttribs", 0x874D3200, TdfType.Map, 1, true), // ATTR
-        new TdfMemberInfo("GroupId", "mGroupId", 0x8B4C2C00, TdfType.UInt64, 2, true), // BTPL
+        new TdfMemberInfo("GroupId", "mGroupId", 0x8B4C2C00, TdfType.ObjectId, 2, true), // BTPL
         new TdfMemberInfo("EntryCriteriaMap", "mEntryCriteriaMap", 0x8F2A7400, TdfType.Map, 3, true), // CRIT
         new TdfMemberInfo("GamePingSiteAlias", "mGamePingSiteAlias", 0x9E3D3200, TdfType.String, 4, true), // GCTR
         new TdfMemberInfo("GameName", "mGameName", 0x9EE86D00, TdfType.String, 5, true), // GNAM
@@ -40,7 +40,7 @@ public class CreateGameRequest : Tdf
 
     private TdfList<uint> _adminPlayerList = new(__typeInfos[0]);
     private TdfMap<string, string> _gameAttribs = new(__typeInfos[1]);
-    private TdfUInt64 _groupId = new(__typeInfos[2]);
+    private TdfObjectId _groupId = new(__typeInfos[2]);
     private TdfMap<string, string> _entryCriteriaMap = new(__typeInfos[3]);
     private TdfString _gamePingSiteAlias = new(__typeInfos[4]);
     private TdfString _gameName = new(__typeInfos[5]);
@@ -120,7 +120,7 @@ public class CreateGameRequest : Tdf
         set => _gameAttribs.Value = value;
     }
 
-    public ulong GroupId
+    public ObjectId GroupId
     {
         get => _groupId.Value;
         set => _groupId.Value = value;

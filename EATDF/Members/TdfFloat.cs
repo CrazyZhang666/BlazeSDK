@@ -23,9 +23,9 @@ public class TdfFloat : TdfMember<float>
         return UserSet;
     }
 
-    public override bool Visit(ITdfVisitor visitor, Tdf parent)
+    public override bool Visit(ITdfVisitor visitor, Tdf parent, bool visitHeader)
     {
-        return visitor.VisitFloat(this, parent);
+        return visitor.VisitFloat(this, parent, visitHeader);
     }
 
     public override string ToString()

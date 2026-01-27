@@ -27,7 +27,7 @@ public class HeatEncoder : ITdfVisitor
             do
             {
                 ITdfMember member = enumerator.Current;
-                bool visited = member.Visit(this, value);
+                bool visited = member.Visit(this, value, visitHeader: true);
 
                 if (visited && !member.TdfInfo.IsUnique)
                 {
@@ -44,19 +44,26 @@ public class HeatEncoder : ITdfVisitor
         }
     }
 
-    public bool VisitBlazeObjectId(TdfObjectId value, Tdf parent)
+    public bool VisitBlazeObjectId(TdfObjectId value, Tdf parent, bool visitHeader)
     {
-        // Heat does not support BlazeObjectIds
-        return false;
+        if (!putHeader(value, HeatType.UInt64, sizeof(ulong), out byte encodedSizeHint))
+            return false;
+        
+        writer.WriteObjectId(value.Value, encodedSizeHint);
+        return true;
     }
 
-    public bool VisitBlazeObjectType(TdfObjectType value, Tdf parent)
+    public bool VisitBlazeObjectType(TdfObjectType value, Tdf parent, bool visitHeader)
     {
-        // Heat does not support BlazeObjectTypes
-        return false;
+        // Object types are encoded as unsigned 32-bit integers in Heat
+        if (!putHeader(value, HeatType.UInt32, sizeof(uint), out byte encodedSizeHint))
+            return false;
+
+        writer.WriteObjectType(value.Value, encodedSizeHint);
+        return true;
     }
 
-    public bool VisitBlob(TdfBlob value, Tdf parent)
+    public bool VisitBlob(TdfBlob value, Tdf parent, bool visitHeader)
     {
         if (!putHeader(value, HeatType.Blob, value.Value.Length, out byte encodedSizeHint))
             return false;
@@ -65,7 +72,7 @@ public class HeatEncoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitBool(TdfBool value, Tdf parent)
+    public bool VisitBool(TdfBool value, Tdf parent, bool visitHeader)
     {
         if (!putHeader(value, HeatType.Int8, sizeof(sbyte), out byte encodedSizeHint))
             return false;
@@ -74,7 +81,7 @@ public class HeatEncoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitEnum<TEnum>(TdfEnum<TEnum> value, Tdf parent) where TEnum : Enum, new()
+    public bool VisitEnum<TEnum>(TdfEnum<TEnum> value, Tdf parent, bool visitHeader) where TEnum : Enum, new()
     {
         HeatType? wantedHeatType = HeatUtil.ToHeatType(value.UnderlyingType);
         if (wantedHeatType == null)
@@ -90,13 +97,13 @@ public class HeatEncoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitFloat(TdfFloat value, Tdf parent)
+    public bool VisitFloat(TdfFloat value, Tdf parent, bool visitHeader)
     {
         //Heat does not support floats
         return false;
     }
 
-    public bool VisitInt16(TdfInt16 value, Tdf parent)
+    public bool VisitInt16(TdfInt16 value, Tdf parent, bool visitHeader)
     {
         if (!putHeader(value, HeatType.Int16, sizeof(short), out byte encodedSizeHint))
             return false;
@@ -105,7 +112,7 @@ public class HeatEncoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitInt32(TdfInt32 value, Tdf parent)
+    public bool VisitInt32(TdfInt32 value, Tdf parent, bool visitHeader)
     {
         if (!putHeader(value, HeatType.Int32, sizeof(int), out byte encodedSizeHint))
             return false;
@@ -114,7 +121,7 @@ public class HeatEncoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitInt64(TdfInt64 value, Tdf parent)
+    public bool VisitInt64(TdfInt64 value, Tdf parent, bool visitHeader)
     {
         if (!putHeader(value, HeatType.Int64, sizeof(long), out byte encodedSizeHint))
             return false;
@@ -123,7 +130,7 @@ public class HeatEncoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitInt8(TdfInt8 value, Tdf parent)
+    public bool VisitInt8(TdfInt8 value, Tdf parent, bool visitHeader)
     {
         if (!putHeader(value, HeatType.Int8, sizeof(sbyte), out byte encodedSizeHint))
             return false;
@@ -132,7 +139,7 @@ public class HeatEncoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitList<T>(TdfList<T> value, Tdf parent)
+    public bool VisitList<T>(TdfList<T> value, Tdf parent, bool visitHeader)
     {
         if (value.Value == null)
             return false;
@@ -144,7 +151,7 @@ public class HeatEncoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitMap<TKey, TValue>(TdfMap<TKey, TValue> value, Tdf parent) where TKey : notnull
+    public bool VisitMap<TKey, TValue>(TdfMap<TKey, TValue> value, Tdf parent, bool visitHeader) where TKey : notnull
     {
         if (value.Value == null)
             return false;
@@ -156,7 +163,7 @@ public class HeatEncoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitString(TdfString value, Tdf parent)
+    public bool VisitString(TdfString value, Tdf parent, bool visitHeader)
     {
         if (value.Value == null)
             return false;
@@ -169,7 +176,7 @@ public class HeatEncoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitStruct<TStruct>(TdfStruct<TStruct> value, Tdf parent) where TStruct : Tdf?, new()
+    public bool VisitStruct<TStruct>(TdfStruct<TStruct> value, Tdf parent, bool visitHeader) where TStruct : Tdf?, new()
     {
         if(value.Value == null)
             return false;
@@ -181,13 +188,13 @@ public class HeatEncoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitTimeValue(TdfTimeValue value, Tdf parent)
+    public bool VisitTimeValue(TdfTimeValue value, Tdf parent, bool visitHeader)
     {
         // Heat does not support TimeValues
         return false;
     }
 
-    public bool VisitUInt16(TdfUInt16 value, Tdf parent)
+    public bool VisitUInt16(TdfUInt16 value, Tdf parent, bool visitHeader)
     {
         if (!putHeader(value, HeatType.UInt16, sizeof(ushort), out byte encodedSizeHint))
             return false;
@@ -196,7 +203,7 @@ public class HeatEncoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitUInt32(TdfUInt32 value, Tdf parent)
+    public bool VisitUInt32(TdfUInt32 value, Tdf parent, bool visitHeader)
     {
         if (!putHeader(value, HeatType.UInt32, sizeof(uint), out byte encodedSizeHint))
             return false;
@@ -205,7 +212,7 @@ public class HeatEncoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitUInt64(TdfUInt64 value, Tdf parent)
+    public bool VisitUInt64(TdfUInt64 value, Tdf parent, bool visitHeader)
     {
         if (!putHeader(value, HeatType.UInt64, sizeof(ulong), out byte encodedSizeHint))
             return false;
@@ -214,7 +221,7 @@ public class HeatEncoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitUInt8(TdfUInt8 value, Tdf parent)
+    public bool VisitUInt8(TdfUInt8 value, Tdf parent, bool visitHeader)
     {
         if (!putHeader(value, HeatType.UInt8, sizeof(byte), out byte encodedSizeHint))
             return false;
@@ -223,7 +230,7 @@ public class HeatEncoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitUnion<TUnion>(TdfUnion<TUnion> value, Tdf parent) where TUnion : Union, new()
+    public bool VisitUnion<TUnion>(TdfUnion<TUnion> value, Tdf parent, bool visitHeader) where TUnion : Union, new()
     {
         if (value.Value == null)
             return false;
@@ -235,7 +242,7 @@ public class HeatEncoder : ITdfVisitor
         return true;
     }
 
-    public bool VisitVariable(TdfVariable value, Tdf parent)
+    public bool VisitVariable(TdfVariable value, Tdf parent, bool visitHeader)
     {
         // Heat does not support Variables
         return false;

@@ -9,7 +9,7 @@ public class StatGroupResponse : Tdf
     static readonly TdfMemberInfo[] __typeInfos = [
         new TdfMemberInfo("ContextType", "mContextType", 0x8F4E7000, TdfType.UInt32, 0, true), // CTYP
         new TdfMemberInfo("Desc", "mDesc", 0x925CE300, TdfType.String, 1, true), // DESC
-        new TdfMemberInfo("EntityType", "mEntityType", 0x974E7000, TdfType.UInt32, 2, true), // ETYP
+        new TdfMemberInfo("EntityType", "mEntityType", 0x974E7000, TdfType.ObjectType, 2, true), // ETYP
         new TdfMemberInfo("KeyScopeUnitMap", "mKeyScopeUnitMap", 0xAF3D6D00, TdfType.Map, 3, true), // KSUM
         new TdfMemberInfo("Metadata", "mMetadata", 0xB65D2100, TdfType.String, 4, true), // META
         new TdfMemberInfo("Name", "mName", 0xBA1B6500, TdfType.String, 5, true), // NAME
@@ -19,7 +19,7 @@ public class StatGroupResponse : Tdf
 
     private TdfUInt32 _contextType = new(__typeInfos[0]);
     private TdfString _desc = new(__typeInfos[1]);
-    private TdfUInt32 _entityType = new(__typeInfos[2]);
+    private TdfObjectType _entityType = new(__typeInfos[2]);
     private TdfMap<string, string> _keyScopeUnitMap = new(__typeInfos[3]);
     private TdfString _metadata = new(__typeInfos[4]);
     private TdfString _name = new(__typeInfos[5]);
@@ -57,7 +57,7 @@ public class StatGroupResponse : Tdf
         set => _desc.Value = value;
     }
 
-    public uint EntityType
+    public ObjectType EntityType
     {
         get => _entityType.Value;
         set => _entityType.Value = value;

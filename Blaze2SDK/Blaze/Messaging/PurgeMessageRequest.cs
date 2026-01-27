@@ -10,7 +10,7 @@ public class PurgeMessageRequest : Tdf
         new TdfMemberInfo("Flags", "mFlags", 0x9AC86700, TdfType.Enum, 0, true), // FLAG
         new TdfMemberInfo("MessageId", "mMessageId", 0xB67A6400, TdfType.UInt32, 1, true), // MGID
         new TdfMemberInfo("StatusMask", "mStatusMask", 0xCEDCEB00, TdfType.UInt32, 2, true), // SMSK
-        new TdfMemberInfo("Source", "mSource", 0xCF28E500, TdfType.UInt64, 3, true), // SRCE
+        new TdfMemberInfo("Source", "mSource", 0xCF28E500, TdfType.ObjectId, 3, true), // SRCE
         new TdfMemberInfo("Status", "mStatus", 0xCF487400, TdfType.UInt32, 4, true), // STAT
         new TdfMemberInfo("Type", "mType", 0xD39C2500, TdfType.UInt32, 5, true), // TYPE
     ];
@@ -19,7 +19,7 @@ public class PurgeMessageRequest : Tdf
     private TdfEnum<Blaze2SDK.Blaze.Messaging.MatchFlags> _flags = new(__typeInfos[0]);
     private TdfUInt32 _messageId = new(__typeInfos[1]);
     private TdfUInt32 _statusMask = new(__typeInfos[2]);
-    private TdfUInt64 _source = new(__typeInfos[3]);
+    private TdfObjectId _source = new(__typeInfos[3]);
     private TdfUInt32 _status = new(__typeInfos[4]);
     private TdfUInt32 _type = new(__typeInfos[5]);
 
@@ -60,7 +60,7 @@ public class PurgeMessageRequest : Tdf
         set => _statusMask.Value = value;
     }
 
-    public ulong Source
+    public ObjectId Source
     {
         get => _source.Value;
         set => _source.Value = value;

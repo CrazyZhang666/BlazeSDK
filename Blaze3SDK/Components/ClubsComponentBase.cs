@@ -311,7 +311,7 @@ public static class ClubsComponentBase
                 Func = async (req, ctx) => await TransferOwnershipAsync(req, ctx).ConfigureAwait(false)
             });
             
-            RegisterCommand(new RpcCommandFunc<EmptyMessage, EmptyMessage, EmptyMessage>()
+            RegisterCommand(new RpcCommandFunc<GetClubMembershipForUsersRequest, GetClubMembershipForUsersResponse, EmptyMessage>()
             {
                 Id = (ushort)ClubsComponentCommand.getClubMembershipForUsers,
                 Name = "getClubMembershipForUsers",
@@ -757,7 +757,7 @@ public static class ClubsComponentBase
         /// Request type: <see cref="EmptyMessage"/><br/>
         /// Response type: <see cref="EmptyMessage"/><br/>
         /// </summary>
-        public virtual Task<EmptyMessage> GetClubMembershipForUsersAsync(EmptyMessage request, BlazeRpcContext context)
+        public virtual Task<GetClubMembershipForUsersResponse> GetClubMembershipForUsersAsync(GetClubMembershipForUsersRequest request, BlazeRpcContext context)
         {
             throw new ClubsException(ServerError.ERR_COMMAND_NOT_FOUND);
         }

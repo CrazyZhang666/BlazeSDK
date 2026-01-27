@@ -41,8 +41,8 @@ public class TdfEnum<TEnum> : TdfMember<TEnum> where TEnum : Enum, new()
         return UserSet;
     }
 
-    public override bool Visit(ITdfVisitor visitor, Tdf parent)
+    public override bool Visit(ITdfVisitor visitor, Tdf parent, bool visitHeader)
     {
-        return visitor.VisitEnum(this, parent);
+        return visitor.VisitEnum(this, parent, visitHeader);
     }
 }

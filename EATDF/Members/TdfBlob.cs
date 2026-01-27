@@ -24,9 +24,9 @@ public class TdfBlob : TdfMember<byte[]>
         return Value != null && (UserSet || Value.Length > 0);
     }
 
-    public override bool Visit(ITdfVisitor visitor, Tdf parent)
+    public override bool Visit(ITdfVisitor visitor, Tdf parent, bool visitHeader)
     {
-        return visitor.VisitBlob(this, parent);
+        return visitor.VisitBlob(this, parent, visitHeader);
     }
 
     public override string ToString()

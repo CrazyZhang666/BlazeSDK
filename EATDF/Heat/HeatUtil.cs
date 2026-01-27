@@ -39,6 +39,10 @@ internal class HeatUtil
                 return HeatType.Blob;
             case TdfType.Union:
                 return HeatType.Union;
+            case TdfType.ObjectType:
+                return HeatType.UInt32;
+            case TdfType.ObjectId:
+                return HeatType.UInt64;
             default:
                 return null;
         }
@@ -84,6 +88,12 @@ internal class HeatUtil
 
         if (type == typeof(byte[]))
             return HeatType.Blob;
+
+        if (type == typeof(ObjectType))
+            return HeatType.UInt32;
+
+        if (type == typeof(ObjectId))
+            return HeatType.UInt64;
 
         return null;
     }
@@ -161,10 +171,18 @@ internal class HeatUtil
             case HeatType.UInt32:
                 if (typeHint?.IsEnum == true)
                     return TdfType.Enum;
+
+                if (typeHint == typeof(ObjectType))
+                    return TdfType.ObjectType;
+
                 return TdfType.UInt32;
             case HeatType.Int64:
                 if (typeHint?.IsEnum == true)
                     return TdfType.Enum;
+
+                if (typeHint == typeof(ObjectId))
+                    return TdfType.ObjectId;
+
                 return TdfType.Int64;
             case HeatType.UInt64:
                 if (typeHint?.IsEnum == true)
@@ -202,11 +220,11 @@ internal class HeatUtil
             case HeatType.Int32:
                 return type == typeof(int) || type == typeof(long);
             case HeatType.UInt32:
-                return type == typeof(uint) || type == typeof(ulong);
+                return type == typeof(uint) || type == typeof(ulong) || type == typeof(ObjectType);
             case HeatType.Int64:
                 return type == typeof(long);
             case HeatType.UInt64:
-                return type == typeof(ulong);
+                return type == typeof(ulong) || type == typeof(ObjectId);
             case HeatType.Array:
                 return Helpers.IsList(type);
             case HeatType.Blob:
@@ -239,11 +257,11 @@ internal class HeatUtil
             case HeatType.Int32:
                 return type == typeof(int);
             case HeatType.UInt32:
-                return type == typeof(uint);
+                return type == typeof(uint) || type == typeof(ObjectType);
             case HeatType.Int64:
                 return type == typeof(long);
             case HeatType.UInt64:
-                return type == typeof(ulong);
+                return type == typeof(ulong) || type == typeof(ObjectId);
             case HeatType.Array:
                 return Helpers.IsList(type);
             case HeatType.Blob:

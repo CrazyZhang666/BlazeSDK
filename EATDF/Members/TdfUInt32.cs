@@ -23,9 +23,9 @@ public class TdfUInt32 : TdfMember<uint>
         return UserSet;
     }
 
-    public override bool Visit(ITdfVisitor visitor, Tdf parent)
+    public override bool Visit(ITdfVisitor visitor, Tdf parent, bool visitHeader)
     {
-        return visitor.VisitUInt32(this, parent);
+        return visitor.VisitUInt32(this, parent, visitHeader);
     }
 
     public override string ToString()
